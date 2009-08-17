@@ -30,6 +30,12 @@ get '/timeline' do
   erb :timeline
 end
 
+get 'signup' do
+  erb :signup
+end
+
+
+
 post '/update' do
   @client.update(params[:update].toutf8)
   redirect '/timeline'
@@ -71,7 +77,7 @@ get '/auth' do
       session[:access_token] = @access_token.token
       session[:secret_token] = @access_token.secret
       session[:user] = true
-      redirect '/timeline'
+      redirect '/signup'
     else
       redirect '/'
   end

@@ -1,4 +1,4 @@
-require 'lib/app'
+require 'app'
 require 'spec/spec_helper'
 
 describe 'GET /' do
@@ -10,8 +10,8 @@ describe 'GET /' do
     last_response.ok?.should be_true
   end
 
-  it "responseは'<html>\\n<head>\\n' kara hajimaru" do
-    last_response.body.should =~ /<html>\n<hrad>/
+  it "responseは'html' wo motteiru" do
+    last_response.body.should =~ /html/
   end
 
   it "@tweetsをもつべき" do
