@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Twitter2mixi Application</title>
+    <link href="/main.css" media="screen" rel="Stylesheet" type="text/css" />
+</head>
+
+<body>
+
+<div id="content">
+    <div id="header">
+        <div>
+            <h1><a href='http://twitter2mixi.cyberwave.jp/'>Twitter2Mixi Application</a></h1>
+        </div>
+        <br clear="all"/>
+    </div>
+    
+    <div id="nav" style="float:right">
+        <p>
+            <a href='/'>Home</a> |
+            <a href='/search'>Search</a>
+            <% if @user %>
+                |
+                <a href='/timeline'>Timeline</a> |
+                <a href='/messages'>Direct Messages</a> |
+                <a href='/disconnect'>Logout</a>
+            <% end %>
+        </p>
+    </div>
+    <br clear="all"/>
+    
+    <%= yield %>
+    
+    <div id="footer">
+        <br/>
+        <small>
+          <%= session[:access_token] %>
+          <%= session[:secret_token] %>
+
+            copyright <a href='http://cyberwave.jp/nashiki/' target='_blank'>cyberwave.jp</a>
+        </small>
+    </div>
+    
+</div>
+
+</body>
+</html>
