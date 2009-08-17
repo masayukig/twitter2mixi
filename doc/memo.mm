@@ -1,0 +1,37 @@
+<map version="0.8.1">
+<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
+<node CREATED="1250418905812" ID="Freemind_Link_1612025774" MODIFIED="1250418926234" TEXT="Twitter2Mixi">
+<node CREATED="1250418948140" HGAP="28" ID="Freemind_Link_776055590" MODIFIED="1250419249734" POSITION="right" TEXT="main.rb" VSHIFT="-2">
+<node CREATED="1250419313171" ID="Freemind_Link_281601527" MODIFIED="1250419316234" TEXT="&#x5165;&#x4f1a;&#x624b;&#x7d9a;&#x304d;">
+<node CREATED="1250418978968" ID="Freemind_Link_640121006" MODIFIED="1250419326437" TEXT="Twitter&#x306e;OAuth&#x8a8d;&#x8a3c;"/>
+<node CREATED="1250419311265" ID="Freemind_Link_1840419354" MODIFIED="1250419344031" TEXT="Mixi&#x306e;IDPASS&#x3092;&#x30e6;&#x30fc;&#x30b6;&#x304b;&#x3089;&#x5165;&#x529b;"/>
+</node>
+<node CREATED="1250419291265" ID="Freemind_Link_394075422" MODIFIED="1250419658812" TEXT="&#x624b;&#x52d5;&#x3067;&#x9000;&#x4f1a;&#x624b;&#x7d9a;&#x304d;"/>
+</node>
+<node CREATED="1250419012343" ID="Freemind_Link_488091038" MODIFIED="1250419248156" POSITION="right" TEXT="batch.rb" VSHIFT="12">
+<node CREATED="1250419019140" ID="Freemind_Link_1986042208" MODIFIED="1250419027765" TEXT="status&#x9023;&#x643a;&#x6a5f;&#x80fd;"/>
+<node CREATED="1250419675468" ID="Freemind_Link_53863584" MODIFIED="1250419681781" TEXT="&#x672c;&#x6a5f;&#x80fd;">
+<node CREATED="1250419028531" ID="Freemind_Link_590766428" MODIFIED="1250419672937" TEXT="Twitter&#x306e;&#x30b9;&#x30c6;&#x30fc;&#x30bf;&#x30b9;&#x9023;&#x643a;"/>
+<node CREATED="1250419686875" ID="Freemind_Link_1361278835" MODIFIED="1250419690250" TEXT="&#x65e5;&#x8a18;&#x9023;&#x643a;"/>
+</node>
+<node CREATED="1250419046562" ID="Freemind_Link_1938029555" MODIFIED="1250419663921" TEXT="&#x81ea;&#x52d5;&#x3067;&#x9000;&#x4f1a;&#x624b;&#x7d9a;&#x304d;">
+<node CREATED="1250419056093" ID="Freemind_Link_646724720" MODIFIED="1250419066828" TEXT="Twitter&#x306e;&#x8a8d;&#x8a3c;&#x306b;&#x5931;&#x6557;&#x3057;&#x305f;&#x6642;"/>
+<node CREATED="1250419084953" ID="Freemind_Link_1393905157" MODIFIED="1250419095265" TEXT="Mixi&#x306e;&#x30ed;&#x30b0;&#x30a4;&#x30f3;&#x306b;&#x5931;&#x6557;&#x3057;&#x305f;&#x6642;"/>
+<node CREATED="1250419156375" ID="Freemind_Link_215548136" MODIFIED="1250419172640" TEXT="3&#x30f6;&#x6708;&#x9593;&#x66f4;&#x65b0;&#x304c;&#x7121;&#x304b;&#x3063;&#x305f;&#x3089;"/>
+</node>
+</node>
+<node CREATED="1250418927828" ID="_" MODIFIED="1250419245093" POSITION="left" TEXT="Twitter&#x3084;&#x3063;&#x3066;&#x3044;&#x308b;&#x4eba;&#x304c;MixiEcho&#x3067;&#x304d;&#x308b;" VSHIFT="-10">
+<node CREATED="1250419195890" ID="Freemind_Link_1069260894" MODIFIED="1250419206750" TEXT="Twitter&#x306f;&#x306f;&#x3084;&#x3063;&#x3066;&#x3044;&#x308b;&#x3051;&#x3069;MixiEcho&#x306f;&#x306f;&#x3084;&#x3063;&#x3066;&#x306a;&#x3044;"/>
+<node CREATED="1250419207484" ID="Freemind_Link_1854563985" MODIFIED="1250419218312" TEXT="&#x3060;&#x308c;&#x3082;&#x3084;&#x3063;&#x3066;&#x306a;&#x3044;&#x306e;&#x304b;&#xff1f;"/>
+<node CREATED="1250419219859" ID="Freemind_Link_689726764" MODIFIED="1250419235437" TEXT="Mixi&#x65e5;&#x8a18;&#x306f;&#x306f;&#x3084;&#x3063;&#x3066;&#x3044;&#x308b;&#x306e;&#x3067;Mixi&#x65e5;&#x8a18;&#x306b;Twitter&#x81ea;&#x52d5;&#x30dd;&#x30b9;&#x30c8;&#x3067;&#x3082;&#x3044;&#x3044;&#x304b;&#x3082;&#xff1f;"/>
+</node>
+<node CREATED="1250419716625" ID="Freemind_Link_1866449322" MODIFIED="1250419720890" POSITION="left" TEXT="DB&#x306b;&#x4fdd;&#x6301;&#x3059;&#x308b;&#x3082;&#x306e;">
+<node CREATED="1250419721890" ID="Freemind_Link_667021123" MODIFIED="1250419730984" TEXT="&#x672c;&#x30b5;&#x30fc;&#x30d3;&#x30b9;&#x4f1a;&#x54e1;&#x60c5;&#x5831;">
+<node CREATED="1250419732375" ID="Freemind_Link_1840450966" MODIFIED="1250419737250" TEXT="token"/>
+<node CREATED="1250419737546" ID="Freemind_Link_578931433" MODIFIED="1250419739343" TEXT="secret"/>
+<node CREATED="1250419739640" ID="Freemind_Link_1212517568" MODIFIED="1250419747890" TEXT="MixiPassword"/>
+</node>
+<node CREATED="1250419749375" ID="Freemind_Link_1515951585" MODIFIED="1250419764640" TEXT="Status&#x66f4;&#x65b0;&#x5c65;&#x6b74;"/>
+</node>
+</node>
+</map>
