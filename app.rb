@@ -2,10 +2,11 @@ require 'rubygems'
 require 'sinatra'
 require 'twitter_oauth'
 require 'kconv'
+require 'lib/mixi_client'
 
 configure do
   set :sessions, true
-  @@config = YAML.load_file("config.yml") rescue nil || {}
+  @@config = YAML.load_file("config.yaml") rescue nil || {}
 end
 
 before do
@@ -30,10 +31,13 @@ get '/timeline' do
   erb :timeline
 end
 
-get 'signup' do
+get '/signup' do
   erb :signup
 end
 
+post '/signup' do
+  erb :signup
+end
 
 
 post '/update' do

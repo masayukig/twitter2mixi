@@ -1,1 +1,3 @@
 config.yml
+spec/testdata.yaml
+nbproject/*.*

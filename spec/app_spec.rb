@@ -1,5 +1,5 @@
-require 'app'
 require 'spec/spec_helper'
+require 'app'
 
 describe 'GET /' do
   before :all do
