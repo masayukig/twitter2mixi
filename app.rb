@@ -4,6 +4,8 @@ require 'twitter_oauth'
 require 'kconv'
 require 'lib/mixi_client'
 
+use Rack::ShowStatus
+
 configure do
   set :sessions, true
   @@config = YAML.load_file("config.yaml") rescue nil || {}
