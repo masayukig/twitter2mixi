@@ -9,7 +9,7 @@ describe 'MixiClientの仕様' do
     @config = YAML.load_file(File.expand_path(File.dirname(__FILE__)) + '/testdata.yaml')
   end
 
-  it 'テストアカウントでログインできること' do
+  it 'ログインが成功するとTrueを返すこと' do
     @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
   end
 

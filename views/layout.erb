@@ -16,13 +16,12 @@
     
     <div id="nav" style="float:right">
         <p>
-            <a href='/'>Home</a> |
-            <a href='/search'>Search</a>
+            <a href='/'>Home</a>
             <% if @user %>
-                |
-                <a href='/timeline'>Timeline</a> |
-                <a href='/messages'>Direct Messages</a> |
-                <a href='/disconnect'>Logout</a>
+                | <a href='/signup'>Setting</a>
+                | <a href='/disconnect'>Logout</a>
+            <% else %>
+                | <a href='/connect'>Login</a>
             <% end %>
         </p>
     </div>

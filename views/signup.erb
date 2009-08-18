@@ -4,19 +4,10 @@ Only 2 steps!<br>
 Second Step. <br>
 <br>
 Please tell me This Mixi account.<br>
-<br>
+<%= @flash_mess %><br>
 <form method="post" action="/signup">
-Email:<input type="text" name="mixi_email" /><br>
-Password:<input type="text" name="mixi_password" /><br>
+Email:<input type="text" name="email" value="<%=  params[:email] %>"/><br>
+Password:<input type="password" name="password" value="<%=  params[:password] %>"/><br>
 <input type="submit" value="submit" />
 </form>
 </div>
-<h2>About</h2>
-<p>
-    This twitter2mixi is that Your Twitter status write Your <a href='http://mixi.jp/recent_echo.pl' target='_blank'>mixi echo</a>! Twitter status write so mixi echo auto post.
-</p>
-
-<h2>Author</h2>
-<p>
-    <a href='http://cyberwave.jp/nashiki/'  target='_blank'>nashiki shigeyuki</a>
-</p>

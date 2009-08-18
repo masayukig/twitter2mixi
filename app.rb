@@ -34,10 +34,19 @@ get '/timeline' do
 end
 
 get '/signup' do
+  @flash_mess = ''
   erb :signup
 end
 
+get '/success' do
+  erb :success
+end
+
 post '/signup' do
+  @mixiclient = MixiClient.new
+  redirect '/success' if @mixiclient.login(params[:email], params[:password])
+
+  @flash_mess = 'Mixiのログインに失敗しました。'
   erb :signup
 end
 
