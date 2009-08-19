@@ -6,6 +6,11 @@ require 'lib/mixi_client'
 
 use Rack::ShowStatus
 
+# 環境準備
+# gem install mechanize --version "= 0.8.5"
+# gem install moonmerman-twitter_oauth
+
+
 configure do
   set :sessions, true
   @@config = YAML.load_file("config.yaml") rescue nil || {}
