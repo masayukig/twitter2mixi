@@ -22,6 +22,4 @@ describe 'GET /' do
     last_response.body.should == last_app.erb(:home)
   end
 
-  it "pending"
-
 end

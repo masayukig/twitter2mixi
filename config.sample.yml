@@ -1,0 +1,19 @@
+##
+## twitter2mixi sample yaml file
+##
+#
+# please rewrite your enviroment.
+#
+
+env: test
+
+consumer_key: replace_your_consumer_token
+consumer_secret: replace_your_consumer_secret_token
+
+oauth_confirm_url: http://yourdomain.com/auth
+# oauth_confirm_url: http://localhost:4567/auth
+
+
+# this is test account for rspec
+mixiemail: replace_your_mixi_email
+mixipassword: replace_your_mixi_password

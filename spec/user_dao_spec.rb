@@ -4,7 +4,7 @@ require 'lib/user_dao'
 describe 'UserDaoの仕様' do
   before(:each) do
     # コンフィグ情報読込
-    @config = YAML.load_file(File.expand_path(File.dirname(__FILE__)) + '/testdata.yaml')
+    @config = YAML.load_file(File.expand_path(File.dirname(__FILE__)) + '/../config.yml')
     @user_dao = UserDao.new @config
   end
 

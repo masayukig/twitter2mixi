@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'dm-core'
-require 'user'
+require 'lib/user'
 
 class UserDao
   attr_reader :login_flg
@@ -14,9 +14,13 @@ class UserDao
 
     # DB初期化
 #    DataMapper.setup(:default, "sqlite3::memory:")
-    DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m.sqlite3")
-    DataObjects::Sqlite3.logger = DataObjects::Logger.new('log/datamapper.log', 0)
+    DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{@config['env']}.db")
+    DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@config['env']}.log", 0)
     DataMapper.auto_upgrade!
+  end
+
+  def db_init
+    DataMapper.auto_migrate!
   end
 
   # [token]

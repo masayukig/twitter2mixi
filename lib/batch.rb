@@ -1,23 +1,30 @@
 require 'rubygems'
 require 'twitter_oauth'
+require 'lib/user'
 require 'kconv'
+require 'dm-core'
 
-  @@config = YAML.load_file("config.yml") rescue nil || {}
- 
-  token = '29564476-Usq3GZQ1w38MWsHjUJrTvhPZgQa80F6cmAIpV7EQS'
-  secret = 'iRDppyEFP2gwpfDJ3B9vz1HGGrku3QZNGsixysxKxno'
+class Batch
+  def initialize config
+    @@config = config
+  end
 
-  @client = TwitterOAuth::Client.new(
-    :consumer_key => @@config['consumer_key'],
-    :consumer_secret => @@config['consumer_secret'],
-    :token => token,
-    :secret => secret
-  )
+  def execute
+    users = User.all
+    users.each {|user|
+      @client = TwitterOAuth::Client.new(
+        :consumer_key => @@config['consumer_key'],
+        :consumer_secret => @@config['consumer_secret'],
+        :token => user.twitter_token,
+        :secret => user.twitter_secret
+      )
 
-#  @access_token = @client.authorize(token, secret)
-p @client.authorized?
-print @client.info
+      @client.user.each { |status|
+        p status['text']
+      }
+#      p user
+    }
 
-  @tweets = @client.user
-
-#print @tweets
+    return true
+  end
+end

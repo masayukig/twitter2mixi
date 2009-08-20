@@ -6,14 +6,14 @@ describe 'MixiClientの仕様' do
     @mixiclient = MixiClient.new
 
     # コンフィグ情報読込
-    @config = YAML.load_file(File.expand_path(File.dirname(__FILE__)) + '/testdata.yaml')
+    @config = YAML.load_file(File.expand_path(File.dirname(__FILE__)) + '/../config.yml')
   end
 
   it 'ログインが成功するとTrueを返すこと' do
     @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
   end
 
-  it 'ログインエラーするとnilが返ってくる' do
+  it 'ログインエラーするとFalseが返ってくる' do
     @mixiclient.login(@config['mixiemail'], 'password').should be_false
   end
 

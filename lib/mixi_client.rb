@@ -48,9 +48,8 @@ class MixiClient
     # エコー書き込み
     form = page.forms[1]
     form.fields.find { |f| f.name == 'body' }.value = message.toeuc
-    page = @agent.submit( form,form.buttons.first )
+    page = @agent.submit( form, form.buttons.first )
 
-    p page
     # とりあえずエラー処理無し
     # TODO エラー処理実装
     return message if true

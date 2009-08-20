@@ -1,0 +1,12 @@
+##
+## GEMの準備
+##
+#
+# gem install sinatra
+# gem install moomerman-twitter_oauth
+# gem install mechanize --version "= 0.8.5"
+# gem install do_sqlite3 dm-core
+# gem install rspec
+# gem install rack-test
+# gem install win32console # もしWindows上で動かす時
+
