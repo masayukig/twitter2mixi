@@ -8,7 +8,8 @@ use Rack::ShowStatus
 
 # 環境準備
 # gem install mechanize --version "= 0.8.5"
-# gem install moonmerman-twitter_oauth
+# gem install moomerman-twitter_oauth
+# gem install do_sqlite3 dm-core
 
 
 configure do

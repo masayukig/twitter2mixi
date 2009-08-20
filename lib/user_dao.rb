@@ -1,36 +1,22 @@
-require 'sqlite3'
+require 'rubygems'
+require 'dm-core'
+require 'user'
 
 class UserDao
   attr_reader :login_flg
 
   def initialize config
     @config = config
-    # アカウント情報の初期化
-    logout
-  end
-
-  def init_db
     return false if @config == nil
 
-    # テーブル新規作成
-    sql = <<EOD
-drop table IF EXISTS users;
-create table users (
-    user_id INT
-  , twitter_token VARCHAR
-  , twitter_secret VARCHAR
-  , mixi_email VARCHAR
-  , mixi_password VARCHAR
-	, create_datetime	DATETIME
-	, lastlogin_datetime	DATETIME
-);
-EOD
+    # アカウント情報の初期化
+    logout
 
-    @db = SQLite3::Database.new(@config['dbpath'])
-    @db.execute_batch(sql)
-    
-    # TODO DBに正しく書き込めたか判断してT/Fを返す
-    return true
+    # DB初期化
+#    DataMapper.setup(:default, "sqlite3::memory:")
+    DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m.sqlite3")
+    DataObjects::Sqlite3.logger = DataObjects::Logger.new('log/datamapper.log', 0)
+    DataMapper.auto_upgrade!
   end
 
   # [token]
@@ -43,12 +29,12 @@ EOD
   #
   # 既に会員になっていたらLogin状態で正常終了する
   def login token, secret
-    user_id = user_exist? token
+    user_id = User.first(:twitter_token => token, :twitter_secret => secret).user_id
     return false if user_id == nil
 
     # 会員情報を保存
-    @twiter_token = token
-    @twiter_secret = secret
+    @twitter_token = token
+    @twitter_secret = secret
     @login_flg = true
     return user_id
   end
@@ -56,8 +42,8 @@ EOD
   def logout
     # ユーザアカウント情報の初期化
     @login_flg = false
-    @twiter_token = nil
-    @twiter_secret = nil
+    @twitter_token = nil
+    @twitter_secret = nil
   end
 
   # [token]
@@ -73,23 +59,18 @@ EOD
     # 既にログイン済みであればエラー
     return false if @login_status
     # 既に会員登録されていればログイン処理を行い終了
-    if user_exist? token
+    if User.first(:twitter_token => token, :twitter_secret => secret)
       return login token, secret
     end
 
     # 新規会員
-    user_id = get_max_user_id + 1
-    sql =
-      "INSERT INTO users (user_id, twitter_token, twitter_secret, create_datetime, lastlogin_datetime)
-       VALUES (#{user_id}, '#{token}', '#{secret}', datetime('now', 'localtime'), datetime('now', 'localtime'));"
-    @db.execute(sql)
+    user = User.new
+    user.attributes = {:twitter_token => token, :twitter_secret => secret}
+    user.save
     @login_flg = true
-    @twiter_token = token
-    @twiter_secret = secret
-
-    user_id = @db.execute('select last_insert_rowid() as user_id')[0][0].to_i
-    # TODO DBに正しく書き込めたか判断してT/Fを返す
-    return user_id
+    @twitter_token = token
+    @twitter_secret = secret
+    return user.user_id
   end
 
   # [email]
@@ -105,29 +86,14 @@ EOD
     # ログイン状態でなければ異常終了
     return false if @login_flg == false
 
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return false if user == nil
 
-
-  end
-
-  # [token]
-  #   Twitterのアクセストークン
-  # [secret]
-  #   Twitterのシークレットトークン
-  #
-  # ユーザーが既に登録されているか確認
-  def user_exist? token
-    sql = "select user_id from users where twitter_token='#{token}';"
-    result = @db.execute(sql)
-    return false if result[0] == nil
-    return false if result[0][0] == nil
-    return result[0][0].to_i
-  end
-
-  def get_max_user_id
-    sql = "select max(user_id) as max from users;"
-    max = @db.execute(sql)
-    return max[0][0].to_i
+    user.attributes = {:mixi_email => email, :mixi_password => password}
+    user.save
+    return true
   end
 
 
 end
+
