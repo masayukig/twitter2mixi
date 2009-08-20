@@ -1,5 +1,3 @@
 config.yaml
 spec/testdata.yaml
 nbproject/
-db/*.*
-log/*.*
