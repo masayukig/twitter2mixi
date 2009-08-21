@@ -1,4 +1,6 @@
+require 'rubygems'
 require 'dm-core'
+require 'dm-timestamps'
 
 class User
     include DataMapper::Resource
@@ -8,6 +10,6 @@ class User
     property :twitter_secret, String, :size => 500
     property :mixi_email, String, :size => 500
     property :mixi_password, String, :size => 500
-    property :create_datetime,	DateTime, :default => Proc.new{ Time.now }
-    property :lastlogin_datetime,	DateTime, :default => Proc.new { Time.now }
+    property :created_at, DateTime
+    property :updated_at, DateTime
 end
