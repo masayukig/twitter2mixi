@@ -5,11 +5,11 @@ require 'kconv'
 require 'lib/mixi_client'
 require 'lib/user_dao'
 
-use Rack::ShowStatus
-
 configure do
   set :sessions, true
   @@config = YAML.load_file("config.yml") rescue nil || {}
+  @@user_dao = UserDao.new @@config
+  @@mixiclient = MixiClient.new
 end
 
 before do
@@ -20,8 +20,6 @@ before do
     :token => session[:access_token],
     :secret => session[:secret_token]
   )
-  @user_dao = UserDao.new @@config
-  @mixiclient = MixiClient.new
   @rate_limit_status = @client.rate_limit_status
 end
 
@@ -38,19 +36,19 @@ end
 
 get '/signup' do
   @flash_mess = ''
-  if @user_dao.twitter_login session[:access_token], session[:secret_token]
+  if @@user_dao.login session[:access_token], session[:secret_token]
     @flash_mess = '既にユーザ登録されています。'
   else
     @flash_mess = 'Twitter2mixiへ、ようこそ。'
-    @user_dao.twitter_regist session[:access_token], session[:secret_token]
+    @@user_dao.twitter_regist session[:access_token], session[:secret_token]
   end
   erb :signup
 end
 
 post '/signup' do
-  if @mixiclient.login(params[:email], params[:password])
+  if @@mixiclient.login(params[:email], params[:password])
     @flash_mess = '正しいMixiのアカウント情報を確認できました。'
-    @user_dao.mixi_regist params[:email], params[:password]
+    @@user_dao.mixi_regist params[:email], params[:password]
     redirect '/success'
   else
     @flash_mess = 'Mixiのログインに失敗しました。'

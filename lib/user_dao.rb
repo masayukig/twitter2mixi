@@ -34,8 +34,9 @@ class UserDao
   #
   # 既に会員になっていたらLogin状態で正常終了する
   def login token, secret
-    user_id = User.first(:twitter_token => token, :twitter_secret => secret).user_id
-    return false if user_id == nil
+    user = User.first(:twitter_token => token, :twitter_secret => secret)
+    return false if user == nil
+    user_id = user.user_id
 
     # 会員情報を保存
     @twitter_token = token
