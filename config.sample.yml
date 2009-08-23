@@ -17,3 +17,5 @@ oauth_confirm_url: http://yourdomain.com/auth
 # this is test account for rspec
 mixiemail: replace_your_mixi_email
 mixipassword: replace_your_mixi_password
+twitter_token: replace_your_twitter_token
+twitter_secret: replace_your_twitter_secret

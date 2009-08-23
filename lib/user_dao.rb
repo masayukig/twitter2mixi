@@ -4,6 +4,7 @@ require 'lib/user'
 
 class UserDao
   attr_reader :login_flg
+  attr_accessor :User
 
   def initialize config
     @config = config
@@ -13,7 +14,7 @@ class UserDao
     logout
 
     # DB初期化
-#    DataMapper.setup(:default, "sqlite3::memory:")
+    #    DataMapper.setup(:default, "sqlite3::memory:")
     DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{@config['env']}.db")
     DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@config['env']}.log", 0)
     DataMapper.auto_upgrade!
@@ -43,6 +44,7 @@ class UserDao
     return user_id
   end
 
+  # ログアウト処理
   def logout
     # ユーザアカウント情報の初期化
     @login_flg = false
@@ -96,6 +98,26 @@ class UserDao
     user.attributes = {:mixi_email => email, :mixi_password => password}
     user.save
     return true
+  end
+
+  def last_status= last_status
+    # ログイン状態でなければ異常終了
+    return false if @login_flg == false
+
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return false if user == nil
+
+    user.attributes = {:last_status => last_status}
+    user.save
+    return true
+  end
+
+  def last_status
+    # ログイン状態でなければ異常終了
+    return nil if @login_flg == false
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return nil if user == nil
+    return user.last_status
   end
 
 

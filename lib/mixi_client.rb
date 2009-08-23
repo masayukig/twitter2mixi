@@ -34,6 +34,14 @@ class MixiClient
     @login_flg = page.header['content-type'] == 'text/html; charset=ISO-8859-1'
   end
 
+  # ログアウト処理
+  def logout
+    return nil if @login_flg == false
+
+    # ログアウトを開く
+    page = @agent.get("http://mixi.jp/logout.pl")
+  end
+
   # [message]
   #   1200文字以下のエコー文章
   #   
@@ -53,6 +61,36 @@ class MixiClient
     # とりあえずエラー処理無し
     # TODO エラー処理実装
     return message if true
+  end
+
+  # [timeline]
+  #   最大20件の本人のツブヤキ配列（新しい順）
+  # [last_status]
+  #   Mixiエコーに書き込んだ最後のツブヤキ
+  # [返り値]
+  #   ツブヤキ件数
+  # 
+  # timelineの中に、last_statusがある時は、その前までMixiエコーに書き込みます
+  # timelineの中に、last_statusがない時は、timelineの全てをMixiエコーに書き込みます
+  def write_echos timeline, last_status
+    return nil if @login_flg == false
+    return nil if timeline==nil
+
+    # 最終更新ツブヤキの差分抽出
+    count = 0
+    timeline_diff = Array.new
+    timeline.each{|text|
+      break if text == last_status && last_status != nil
+      timeline_diff << text
+      count += 1
+    }
+
+    # 差分のみMixiEchoへ書き込み（古い順）
+    timeline_diff.reverse_each {|text|
+      write_echo text
+    }
+
+    return count
   end
 
 end

@@ -27,4 +27,13 @@ describe 'MixiClientの仕様' do
   it 'nil文をEchoしたらnilが返ってくる'
   it '1200文字オーバーのEcho文は書き込めないのでnilがかえる'
   it '改行文字入りの文章は、半角スペースに置換されて返ってくる'
+
+  it 'timelineを一括エコー書き込み'do
+    @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
+    timeline = Array.new
+    timeline << 'はじめのツブヤキ'
+    timeline << '2回目のツブヤキ'
+    timeline << '3回目のツブヤキ'
+    @mixiclient.write_echos(timeline, '3回目のツブヤキ').should == 2
+  end
 end

@@ -25,6 +25,7 @@
 <node CREATED="1250419207484" ID="Freemind_Link_1854563985" MODIFIED="1250419218312" TEXT="&#x3060;&#x308c;&#x3082;&#x3084;&#x3063;&#x3066;&#x306a;&#x3044;&#x306e;&#x304b;&#xff1f;"/>
 <node CREATED="1250419219859" ID="Freemind_Link_689726764" MODIFIED="1250419235437" TEXT="Mixi&#x65e5;&#x8a18;&#x306f;&#x306f;&#x3084;&#x3063;&#x3066;&#x3044;&#x308b;&#x306e;&#x3067;Mixi&#x65e5;&#x8a18;&#x306b;Twitter&#x81ea;&#x52d5;&#x30dd;&#x30b9;&#x30c8;&#x3067;&#x3082;&#x3044;&#x3044;&#x304b;&#x3082;&#xff1f;"/>
 </node>
+<node CREATED="1251017630140" ID="Freemind_Link_1397245669" MODIFIED="1251017646046" POSITION="left" TEXT="Twitter&#x3084;&#x3063;&#x3066;&#x3044;&#x308b;&#x4eba;&#x304c;Mixi&#x65e5;&#x8a18;&#x306b;&#x81ea;&#x52d5;&#x6295;&#x7a3f;&#x3067;&#x304d;&#x308b;"/>
 <node CREATED="1250419716625" ID="Freemind_Link_1866449322" MODIFIED="1250419720890" POSITION="left" TEXT="DB&#x306b;&#x4fdd;&#x6301;&#x3059;&#x308b;&#x3082;&#x306e;">
 <node CREATED="1250419721890" ID="Freemind_Link_667021123" MODIFIED="1250419730984" TEXT="&#x672c;&#x30b5;&#x30fc;&#x30d3;&#x30b9;&#x4f1a;&#x54e1;&#x60c5;&#x5831;">
 <node CREATED="1250419732375" ID="Freemind_Link_1840450966" MODIFIED="1250419737250" TEXT="token"/>

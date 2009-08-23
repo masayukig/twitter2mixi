@@ -3,6 +3,7 @@ require 'sinatra'
 require 'twitter_oauth'
 require 'kconv'
 require 'lib/mixi_client'
+require 'lib/user_dao'
 
 use Rack::ShowStatus
 
@@ -19,6 +20,8 @@ before do
     :token => session[:access_token],
     :secret => session[:secret_token]
   )
+  @user_dao = UserDao.new @@config
+  @mixiclient = MixiClient.new
   @rate_limit_status = @client.rate_limit_status
 end
 
@@ -35,19 +38,28 @@ end
 
 get '/signup' do
   @flash_mess = ''
+  if @user_dao.twitter_login session[:access_token], session[:secret_token]
+    @flash_mess = '既にユーザ登録されています。'
+  else
+    @flash_mess = 'Twitter2mixiへ、ようこそ。'
+    @user_dao.twitter_regist session[:access_token], session[:secret_token]
+  end
   erb :signup
+end
+
+post '/signup' do
+  if @mixiclient.login(params[:email], params[:password])
+    @flash_mess = '正しいMixiのアカウント情報を確認できました。'
+    @user_dao.mixi_regist params[:email], params[:password]
+    redirect '/success'
+  else
+    @flash_mess = 'Mixiのログインに失敗しました。'
+    erb :signup
+  end
 end
 
 get '/success' do
   erb :success
-end
-
-post '/signup' do
-  @mixiclient = MixiClient.new
-  redirect '/success' if @mixiclient.login(params[:email], params[:password])
-
-  @flash_mess = 'Mixiのログインに失敗しました。'
-  erb :signup
 end
 
 
@@ -87,14 +99,14 @@ get '/auth' do
   )
   
   if @client.authorized?
-      # Storing the access tokens so we don't have to go back to Twitter again
-      # in this session.  In a larger app you would probably persist these details somewhere.
-      session[:access_token] = @access_token.token
-      session[:secret_token] = @access_token.secret
-      session[:user] = true
-      redirect '/signup'
-    else
-      redirect '/'
+    # Storing the access tokens so we don't have to go back to Twitter again
+    # in this session.  In a larger app you would probably persist these details somewhere.
+    session[:access_token] = @access_token.token
+    session[:secret_token] = @access_token.secret
+    session[:user] = true
+    redirect '/signup'
+  else
+    redirect '/'
   end
 end
 
