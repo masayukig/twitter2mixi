@@ -25,7 +25,7 @@ describe 'UserDaoの仕様' do
     @user_dao.login_flg.should be_true
   end
 
-  it 'ログインしてない時にMixi会員アカウントを設定するとFlaseを返す' do
+  it 'ログインしてない時にMixi会員アカウントを設定するとFalseを返す' do
     @user_dao.mixi_regist('test_token', 'test_secret').should be_false
   end
 

@@ -46,7 +46,7 @@ class MixiClient
   #   1200文字以下のエコー文章
   #   
   # エコー書き込み
-  # 正しく書き込めたらTrue、エラーしたらFlaseを返します
+  # 正しく書き込めたらTrue、エラーしたらFalseを返します
   def write_echo message
     return nil if @login_flg == false
 
