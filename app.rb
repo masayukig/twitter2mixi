@@ -24,20 +24,14 @@ before do
 end
 
 get '/' do
-  redirect '/timeline' if @user
-  @tweets = @client.public_timeline
+  redirect '/signup' if @user
   erb :home
-end
-
-get '/timeline' do
-  @tweets = @client.user
-  erb :timeline
 end
 
 get '/signup' do
   @flash_mess = ''
   if @@user_dao.login session[:access_token], session[:secret_token]
-    @flash_mess = '既にユーザ登録されています。'
+    @flash_mess = ''
   else
     @flash_mess = 'Twitter2mixiへ、ようこそ。'
     @@user_dao.twitter_regist session[:access_token], session[:secret_token]
@@ -58,24 +52,6 @@ end
 
 get '/success' do
   erb :success
-end
-
-
-post '/update' do
-  @client.update(params[:update].toutf8)
-  redirect '/timeline'
-end
-
-get '/messages' do
-  @sent = @client.sent_messages
-  @received = @client.messages
-  erb :messages
-end
-
-get '/search' do
-  query = params[:q] || ''
-  @search = @client.search(query, params[:page])
-  erb :search
 end
 
 # store the request tokens and send to Twitter

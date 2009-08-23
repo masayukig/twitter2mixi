@@ -1,13 +1,36 @@
+<center>
+<p>
+<big>
+Twitterから自動送信する、Mixiアカウントを教えて下さい。<br>
 <div id="message">
-Only 2 steps!<br>
-<br>
-Second Step. <br>
-<br>
-Please tell me This Mixi account.<br>
-<%= @flash_mess %><br>
-<form method="post" action="/signup">
-Email:<input type="text" name="email" value="<%=  params[:email] %>"/><br>
-Password:<input type="password" name="password" value="<%=  params[:password] %>"/><br>
-<input type="submit" value="submit" />
-</form>
+<%= @flash_mess %>
 </div>
+</big>
+</p>
+<br>
+<img src="/images/mixi_top.jpg" width='70%'>
+</center>
+<div id="message">
+こちらにMixiアカウントを入力して下さい。
+</div>
+
+<form method="post" action="/signup">
+<table align="center">
+  <tr>
+    <td>
+    <img src="/images/mixi_logo.gif" width='50%'>
+    </td>
+    <td>
+      Email<br>
+      <input type="text" name="email" value="<%=  params[:email] %>"/><br>
+    </td>
+    <td>
+      Password<br>
+      <input type="password" name="password" value="<%=  params[:password] %>"/><br>
+    </td>
+    <td>
+      <input type="submit" value="登録" />
+    </td>
+  </tr>
+</table>
+</form>

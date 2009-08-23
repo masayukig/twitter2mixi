@@ -1,44 +1,41 @@
 <html>
 <head>
-    <title>Twitter2mixi Application</title>
-    <link href="/css/main.css" media="screen" rel="Stylesheet" type="text/css" />
+  <title>Twitter2mixi | TwitterしたらMixiエコーに自動送信!! </title>
+  <link href="/css/main.css" media="screen" rel="Stylesheet" type="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
 <body>
 
 <div id="content">
-    <div id="header">
-        <div>
-            <h1><a href='http://twitter2mixi.cyberwave.jp/'>Twitter2Mixi Application</a></h1>
-        </div>
-        <br clear="all"/>
-    </div>
-    
-    <div id="nav" style="float:right">
-        <p>
-            <a href='/'>Home</a>
-            <% if @user %>
-                | <a href='/signup'>Setting</a>
-                | <a href='/disconnect'>Logout</a>
-            <% else %>
-                | <a href='/connect'>Login</a>
-            <% end %>
-        </p>
+  <div id="header">
+    <div>
+      <h1><a href='/'>Twitter2Mixi</a></h1>
+      <small>TwitterしたらMixiエコーに自動送信!!</small>
     </div>
     <br clear="all"/>
-    
-    <%= yield %>
-    
-    <div id="footer">
-        <br/>
-        <small>
-          <%= session[:access_token] %>
-          <%= session[:secret_token] %>
-
-            copyright <a href='http://cyberwave.jp/nashiki/' target='_blank'>cyberwave.jp</a>
-        </small>
-    </div>
-    
+  </div>
+  
+  <div id="nav" style="float:right">
+    <p>
+      <% if @user %>
+          <a href='/disconnect'>Logout</a>
+      <% else %>
+          <a href='/connect'>Login</a>
+      <% end %>
+    </p>
+  </div>
+  <br clear="all"/>
+  
+  <%= yield %>
+  
+  <div id="footer" align="center">
+    <br/>
+    <small>
+      copyright <a href='http://cyberwave.jp/nashiki/' target='_blank'>cyberwave.jp</a>
+    </small>
+  </div>
+  
 </div>
 
 </body>
