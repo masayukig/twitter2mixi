@@ -1,3 +1,4 @@
+doc/*.lock
 config.yml
 nbproject/
 db
