@@ -1,4 +1,5 @@
 require 'rubygems'
+gem "mechanize", "0.8.5" 
 require 'mechanize'
 require 'kconv'
 
