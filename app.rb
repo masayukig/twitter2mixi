@@ -14,13 +14,18 @@ end
 
 before do
   @user = session[:user]
-  @client = TwitterOAuth::Client.new(
-    :consumer_key => @@config['consumer_key'],
-    :consumer_secret => @@config['consumer_secret'],
-    :token => session[:access_token],
-    :secret => session[:secret_token]
-  )
-  @rate_limit_status = @client.rate_limit_status
+  if request.path_info != '/'
+    @client = TwitterOAuth::Client.new(
+     :consumer_key => @@config['consumer_key'],
+      :consumer_secret => @@config['consumer_secret'],
+      :token => session[:access_token],
+      :secret => session[:secret_token]
+    )
+    @rate_limit_status = @client.rate_limit_status
+  else
+    @client = nil
+    @rate_limit_status = nil
+  end
 end
 
 get '/' do

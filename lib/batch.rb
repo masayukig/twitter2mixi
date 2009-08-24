@@ -31,9 +31,9 @@ class Batch
         :secret => user.twitter_secret
       )
 
-      timeline = Array.new
+timeline = Array.new
       @client.user.each { |status|
-        timeline << replace(status['text'])
+timeline << replace(status['text'])
       }
 
       # Mixiへログインする
