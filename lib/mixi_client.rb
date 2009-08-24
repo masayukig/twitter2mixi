@@ -11,6 +11,13 @@ class MixiClient
     # Mechanizeの初期化
     @agent = WWW::Mechanize.new
     @login_flg = false
+
+    # TODO 出力
+    #require 'logger'
+    #WWW::Mechanize.log = Logger.new('mechlog.txt')
+    #WWW::Mechanize.log.level = Logger::INFO
+    #...
+    #WWW::Mechanize.log.info('login failed') if WWW::Mechanize.log
   end
 
   # [email]
