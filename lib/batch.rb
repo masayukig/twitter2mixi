@@ -41,7 +41,8 @@ timeline << replace(status['text'])
       # TODO falseが帰ってきた時の処理
 
       # エコー書き出し
-      count += @mixiclient.write_echos(timeline, user.last_status)
+      echos = @mixiclient.write_echos(timeline, user.last_status)
+      count += echos if echos != nil
 
       # Mixiからログアウトを行う
       @mixiclient.logout

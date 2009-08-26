@@ -14,7 +14,7 @@ end
 
 before do
   @user = session[:user]
-  if request.path_info != '/'
+  if request.path_info != '/' && request.path_info != '/uc'
     @client = TwitterOAuth::Client.new(
      :consumer_key => @@config['consumer_key'],
       :consumer_secret => @@config['consumer_secret'],
