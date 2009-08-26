@@ -24,32 +24,42 @@ class Batch
     count = 0
     users = User.all
     users.each {|user|
-      @client = TwitterOAuth::Client.new(
+    next if user == nil || user.twitter_token == nil || user.twitter_secret == nil || user.mixi_email == nil || user.mixi_password == nil
+
+    puts "log: #{Time.new} twitter_token=#{user.twitter_token} mixi_account=#{user.mixi_email}"
+
+    @client = TwitterOAuth::Client.new(
         :consumer_key => @@config['consumer_key'],
         :consumer_secret => @@config['consumer_secret'],
         :token => user.twitter_token,
         :secret => user.twitter_secret
-      )
+    )
 
-timeline = Array.new
-      @client.user.each { |status|
-timeline << replace(status['text'])
-      }
+    timeline = Array.new
+    @client.user.each { |status|
+      if "#{status.class}" == 'Hash'
+          text = status['text']
+          timeline << replace(text)
+#puts @client.user['screen_name']
+      else 
+          puts "status.class is #{status.class}"
+      end
+    }
 
       # Mixiへログインする
-      @mixiclient.login(user.mixi_email, user.mixi_password)
+#      @mixiclient.login(user.mixi_email, user.mixi_password)
       # TODO falseが帰ってきた時の処理
 
       # エコー書き出し
-      echos = @mixiclient.write_echos(timeline, user.last_status)
-      count += echos if echos != nil
+#      echos = @mixiclient.write_echos(timeline, user.last_status)
+#      count += echos if echos != nil
 
       # Mixiからログアウトを行う
-      @mixiclient.logout
+#      @mixiclient.logout
 
       # 最終ステータスをDBに保存
-      user.last_status = timeline[0]
-      user.save
+#      user.last_status = timeline[0]
+#      user.save
     }
 
     return count

@@ -10,10 +10,16 @@ configure do
   @@config = YAML.load_file("config.yml") rescue nil || {}
   @@user_dao = UserDao.new @@config
   @@mixiclient = MixiClient.new
+  
+  @@uc_flg = true
 end
 
 before do
-  @user = session[:user]
+  # 工事中FLGですべての画面UCにリダイレクト
+  redirect 'uc' if request.path_info != '/uc' && @@uc_flg
+  @debug_flg = true
+
+  @login_flg = session[:login_flg]
   if request.path_info != '/' && request.path_info != '/uc'
     @client = TwitterOAuth::Client.new(
      :consumer_key => @@config['consumer_key'],
@@ -29,11 +35,17 @@ before do
 end
 
 get '/' do
-  redirect '/signup' if @user
+  redirect '/signup' if @login_flg
   erb :home
 end
 
 get '/signup' do
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+
+  # もし直リンクだったら/に戻す
+#  redirect '/' if session[:access_token] == nil || session[:secret_token] == nil
+
   @flash_mess = ''
   if @@user_dao.login session[:access_token], session[:secret_token]
     @flash_mess = ''
@@ -45,6 +57,12 @@ get '/signup' do
 end
 
 post '/signup' do
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+
+  # もし直リンクだったら/に戻す
+  redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
+
   if @@mixiclient.login(params[:email], params[:password])
     @flash_mess = '正しいMixiのアカウント情報を確認できました。'
     @@user_dao.mixi_regist params[:email], params[:password]
@@ -82,7 +100,7 @@ get '/auth' do
     # in this session.  In a larger app you would probably persist these details somewhere.
     session[:access_token] = @access_token.token
     session[:secret_token] = @access_token.secret
-    session[:user] = true
+    session[:login_flg] = true
     redirect '/signup'
   else
     redirect '/'
@@ -90,12 +108,20 @@ get '/auth' do
 end
 
 get '/disconnect' do
-  session[:user] = nil
+  session[:login_flg] = nil
   session[:request_token] = nil
   session[:request_token_secret] = nil
   session[:access_token] = nil
   session[:secret_token] = nil
   redirect '/'
+end
+
+# 工事中画面
+get '/uc' do
+  # 工事中FLGでなければHOMEへリダイレクト
+  redirect '/' if not @@uc_flg
+
+  erb :uc
 end
 
 helpers do 
