@@ -14,7 +14,7 @@ end
 
 before do
   @user = session[:user]
-  if request.path_info != '/'
+  if request.path_info != '/' && request.path_info != '/uc'
     @client = TwitterOAuth::Client.new(
      :consumer_key => @@config['consumer_key'],
       :consumer_secret => @@config['consumer_secret'],
@@ -29,11 +29,20 @@ before do
 end
 
 get '/' do
+  redirect 'uc'
+
   redirect '/signup' if @user
   erb :home
 end
 
+get '/uc' do
+  erb :uc
+end
+
+
 get '/signup' do
+  redirect 'uc'
+
   @flash_mess = ''
   if @@user_dao.login session[:access_token], session[:secret_token]
     @flash_mess = ''
@@ -45,6 +54,7 @@ get '/signup' do
 end
 
 post '/signup' do
+  redirect 'uc'
   if @@mixiclient.login(params[:email], params[:password])
     @flash_mess = '正しいMixiのアカウント情報を確認できました。'
     @@user_dao.mixi_regist params[:email], params[:password]
@@ -56,7 +66,8 @@ post '/signup' do
 end
 
 get '/success' do
-  erb :success
+redirect 'uc'
+erb :success
 end
 
 # store the request tokens and send to Twitter
