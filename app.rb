@@ -16,11 +16,11 @@ end
 
 before do
   # 工事中FLGですべての画面UCにリダイレクト
-  redirect 'uc' if request.path_info != '/uc' && @@uc_flg
-  @debug_flg = true
+  redirect 'uc' if request.path_info != '/uc' && request.path_info != '/css/main.css' && @@uc_flg
+  @debug_flg = false
 
   @login_flg = session[:login_flg]
-  if request.path_info != '/' && request.path_info != '/uc'
+  if request.path_info != '/' && request.path_info != '/uc' && request.path_info != '/css/main.css'
     @client = TwitterOAuth::Client.new(
      :consumer_key => @@config['consumer_key'],
       :consumer_secret => @@config['consumer_secret'],
@@ -74,6 +74,9 @@ post '/signup' do
 end
 
 get '/success' do
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+
   erb :success
 end
 
@@ -88,6 +91,9 @@ end
 # auth URL is called by twitter after the user has accepted the application
 # this is configured on the Twitter application settings page
 get '/auth' do
+  # 引数が無ければ/に戻す
+  redirect '/' unless params[:oauth_verifier]
+
   # Exchange the request token for an access token.
   @access_token = @client.authorize(
     session[:request_token],
@@ -108,11 +114,13 @@ get '/auth' do
 end
 
 get '/disconnect' do
+  # セッションの初期化
   session[:login_flg] = nil
   session[:request_token] = nil
   session[:request_token_secret] = nil
   session[:access_token] = nil
   session[:secret_token] = nil
+
   redirect '/'
 end
 

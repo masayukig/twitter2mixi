@@ -1,17 +1,17 @@
 <center>
 <p>
-<big>
-Twitterから自動送信する、Mixiアカウントを教えて下さい。<br>
+あなたの、
+<h1>Mixiアカウントを教えて下さい。</h1><br>
 <div id="message">
 <%= @flash_mess %>
 </div>
-</big>
 </p>
 <br>
 <img src="/images/mixi_top.jpg" width='70%'>
 </center>
 <div id="message">
-こちらにMixiアカウントを入力して下さい。
+こちらにMixiアカウントを入力して、<br>
+「Twitter2Mixi登録」ボタンをクリックして下さい。
 </div>
 
 <form method="post" action="/signup">
@@ -23,13 +23,10 @@ Twitterから自動送信する、Mixiアカウントを教えて下さい。<br
     <td>
       Email<br>
       <input type="text" name="email" value="<%=  params[:email] %>"/><br>
-    </td>
-    <td>
       Password<br>
       <input type="password" name="password" value="<%=  params[:password] %>"/><br>
-    </td>
-    <td>
-      <input type="submit" value="登録" />
+      　　　　　　▼<br>
+      <input type="submit" value="　Twitter2Mixi登録　" />
     </td>
   </tr>
 </table>
