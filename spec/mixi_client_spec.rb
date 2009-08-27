@@ -19,6 +19,7 @@ describe 'MixiClientの仕様' do
 
   it '正しくログイン後、問題ないEchoしたらその文章が返ってくる' do
     @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
+    @mixiclient.activate_echo if @mixiclient.activate_echo? == false
     message = 'テストちゅう。問題ないエコー文章。From MixiClient'
     @mixiclient.write_echo(message).should == message
   end
