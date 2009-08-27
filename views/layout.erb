@@ -6,7 +6,9 @@
 </head>
 
 <body>
-
+<%= session[:access_token] if @debug_flg %>
+<%= '<br>' if @debug_flg %>
+<%= session[:secret_token] if @debug_flg %>
 <div id="content">
   <div id="header">
     <div>
@@ -18,17 +20,17 @@
   
   <div id="nav" style="float:right">
     <p>
-      <% if @user %>
+      <% if @login_flg %>
           <a href='/disconnect'>Logout</a>
       <% else %>
-          <!--a href='/connect'>Login</a-->
+          <a href='/connect'>Login</a>
       <% end %>
     </p>
   </div>
   <br clear="all"/>
-  
+
   <%= yield %>
-  
+
   <div id="footer" align="center">
     <br/>
     <small>

@@ -28,7 +28,8 @@ class MixiClient
   # Mixiへ ログイン
   # 成功したらTrueを返します。失敗したらFalseを返します。
   def login email, password
-    page = @agent.get('http://mixi.jp/')
+    page = @agent.get('http://mixi.jp/logout.pl')
+
     form = page.forms[0]
     form.fields.find {|f| f.name == 'email'}.value = email
     form.fields.find {|f| f.name == 'password'}.value = password

@@ -3,3 +3,4 @@ config.yml
 nbproject/
 db
 log
+backup

@@ -93,9 +93,19 @@ class UserDao
     # ログイン状態でなければ異常終了
     return false if @login_flg == false
 
+    # 既に同じ情報で登録済みだったら正常終了
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret, :mixi_email => email, :mixi_password => password)
+    return true if user != nil
+
+    # 過去に既に同じMixiアカウントで登録があったら過去のアカウント情報を削除する
+    user = User.first(:mixi_email => email, :mixi_password => password)
+    user.destroy if user != nil
+
+    # ツイッターアカウントの登録があるか確認
     user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
     return false if user == nil
 
+    # Mixiアカウント情報の保持
     user.attributes = {:mixi_email => email, :mixi_password => password}
     user.save
     return true
