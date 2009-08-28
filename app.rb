@@ -125,6 +125,31 @@ get '/disconnect' do
   redirect '/'
 end
 
+get '/unregist' do
+  # 未ログインだったら/に戻す
+  if @login_flg
+    erb :unregist
+  else
+    redirect '/'
+  end
+end
+
+post '/unregist' do
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+
+  # もし直リンクだったら/に戻す
+  redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
+
+  if @@user_dao.unregist
+    @flash_mess = 'Twitter2mixi登録を解除しました。'
+    erb :unregist_success
+  else
+    @flash_mess = 'Twitter2mixi登録解除に失敗しました。'
+    erb :unregist
+  end
+end
+
 # 工事中画面
 get '/uc' do
   # 工事中FLGでなければHOMEへリダイレクト

@@ -111,6 +111,20 @@ class UserDao
     return true
   end
 
+  # [返り値]
+  #   true: 正常終了
+  #   false: ログイン状態でないと異常終了
+  #
+  # ログインしている状態で、twitter, Mixi会員情報を削除する
+  def unregist
+    # ログイン状態でなければ異常終了
+    return false if @login_flg == false
+
+    # アカウント情報を削除する
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    user.destroy if user != nil
+  end
+
   def last_status= last_status
     # ログイン状態でなければ異常終了
     return false if @login_flg == false
