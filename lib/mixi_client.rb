@@ -28,6 +28,7 @@ class MixiClient
   # Mixiへ ログイン
   # 成功したらTrueを返します。失敗したらFalseを返します。
   def login email, password
+    # ログインしている人でも一度強制ログアウト
     page = @agent.get('http://mixi.jp/logout.pl')
 
     form = page.forms[0]
@@ -51,6 +52,39 @@ class MixiClient
     page = @agent.get("http://mixi.jp/logout.pl")
   end
 
+  # Mixiエコーの利用を開始する
+  def activate_echo
+    # http://mixi.jp/guide_echo.pl
+    # <p class="mainlink1"><a href="change_opt_echo.pl?post_key=8824de56a580957abfa91ec87321ca03cb0ca378&opt_in=y"><img src="http://img.mixi.jp/img/func_intro/echo/ibtn_01seton.gif" width="457" height="87" alt="さっそく「エコー」をつかってみる！" class="btn_seton_echo" /><br /></a>
+    return false if @login_flg == false
+
+    # mixi エコー を開く
+    page = @agent.get("http://mixi.jp/guide_echo.pl")
+
+    # エコーのアクティベーション
+    form = page.form_with(:action => 'change_opt_echo.pl')
+    if activate_link = page.link_with(:href => /change_opt_echo\.pl/)
+      page = @agent.get("http://mixi.jp/#{activate_link.href}")
+      return true if page != nil
+    end
+
+    return false
+  end
+
+  def activate_echo?
+    return false if @login_flg == false
+
+    # mixi エコー を開く
+    page = @agent.get("http://mixi.jp/recent_echo.pl")
+
+    # エコー書き込み
+    form = page.form_with(:action => 'add_echo.pl')
+    # エコーをアクティベートしていないとフォーム取得できない
+    return false if form == nil
+
+    return true
+  end
+
   # [message]
   #   1200文字以下のエコー文章
   #   
@@ -63,11 +97,12 @@ class MixiClient
     page = @agent.get("http://mixi.jp/recent_echo.pl")
 
     # エコー書き込み
-    form = page.forms[1]
-    form.fields.find { |f| f.name == 'body' }.value = message.toeuc
+    form = page.form_with(:action => 'add_echo.pl')
+    # エコーをアクティベートしていないとフォーム取得できない
+    return nil if form == nil
+    form.field_with(:name => 'body').value = message.toeuc
     page = @agent.submit( form, form.buttons.first )
 
-    # とりあえずエラー処理無し
     # TODO エラー処理実装
     return message if true
   end

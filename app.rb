@@ -11,26 +11,27 @@ configure do
   @@user_dao = UserDao.new @@config
   @@mixiclient = MixiClient.new
   
-  @@uc_flg = true
+  @@uc_flg = false
 end
 
 before do
+  # loginflgの設定
+  @login_flg = session[:login_flg]
+
   # 工事中FLGですべての画面UCにリダイレクト
   redirect 'uc' if request.path_info != '/uc' && request.path_info != '/css/main.css' && @@uc_flg
   @debug_flg = false
 
-  @login_flg = session[:login_flg]
-  if request.path_info != '/' && request.path_info != '/uc' && request.path_info != '/css/main.css'
+  # Twitterクライント接続不要箇所など非接続
+  if request.path_info =~ /[.ico|.jpg|.css|^\/uc|^\/]$/
+    @client = nil
+  else
     @client = TwitterOAuth::Client.new(
      :consumer_key => @@config['consumer_key'],
       :consumer_secret => @@config['consumer_secret'],
       :token => session[:access_token],
       :secret => session[:secret_token]
     )
-    @rate_limit_status = @client.rate_limit_status
-  else
-    @client = nil
-    @rate_limit_status = nil
   end
 end
 
