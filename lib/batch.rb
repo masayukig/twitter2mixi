@@ -4,6 +4,7 @@ require 'kconv'
 require 'lib/mixi_client'
 require 'dm-core'
 require 'lib/user'
+require 'time'
 
 class Batch
   def initialize config
@@ -38,43 +39,39 @@ class Batch
           :token => user.twitter_token,
           :secret => user.twitter_secret
       )
-
+      created_at = nil
       # Twitterステータス20件取得
       timeline = Array.new
+      created_ats = Array.new # 最新のつぶやき時間を取得
+      # TODO mixi echoする分だけ、timelineに保持すれば良いのでは？
       client.user.each { |status|
         if "#{status.class}" == 'Hash'
+            status_created_at = Time.parse(status['created_at'])
+            created_ats << status_created_at # 最新のつぶやき時間を取得
+            break if status_created_at <= user.last_tweeted_at.to_time # 既にmixi echo済み
             text = status['text']
             timeline << replace(text)
         else
             puts "status.class is #{status.class}" if @debug_flg
         end
       }
-
       # 一番初めの同期作業
-      if user.last_status == nil
+      if user.last_tweeted_at == nil
         puts "一番初めの同期作業".tosjis if @debug_flg
 
         # 最終ステータスをDBに保存
         user.last_status = timeline[0]
+        user.last_tweeted_at = created_ats[0] # 最新のつぶやき時間をDBに保持
         user.save
         next
       end
 
-      # 最新のTwitterつぶやきメッセージと最終Mixiエコーが、
-      # 同じであれば何もしない
-      if user.last_status == timeline[0]
-        puts "変化無し".tosjis if @debug_flg
-        next
-      end
+      # 最新のTwitterつぶやき時間 < DB上の最新Twitterつぶやき時間
+      # ならば、何もしない
+      # (Twitter上の最新つぶやきをユーザが手動削除にも対応できる)
+      if created_ats[0] < user.last_tweeted_at.to_time
+        puts "ユーザがつぶやきを削除?(created_ats[0]: #{created_ats[0]} , last_tweeted_at: #{user.last_tweeted_at} ".tosjis if @debug_flg
 
-      # 最新Twitter20件の中に、最終Mixiエコーが無ければ、最終Mixiエコーを更新のみで終了
-      # Twitter上の最新つぶやきをユーザが手動削除の可能性有り
-      if timeline.index(user.last_status) == nil
-        puts "同期失敗!(最新口コミ削除された可能性有り)".tosjis if @debug_flg
-
-        # 最終ステータスをDBに保存
-        user.last_status = timeline[0]
-        user.save
         next
       end
 
@@ -91,9 +88,11 @@ class Batch
       mixiclient.logout
 
       # 最終ステータスをDBに保存
-      user.last_status = timeline[0]
-      user.save
-
+      if count != 0  # mixi echoしたときのみ、DB更新
+        user.last_status = timeline[0]
+        user.last_tweeted_at = created_ats[0]
+        user.save
+      end
     }
 
     return count

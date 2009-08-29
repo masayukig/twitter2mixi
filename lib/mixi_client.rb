@@ -115,7 +115,7 @@ class MixiClient
 
     form.field_with(:name => 'body').value = message.toeuc
     page = @agent.submit( form, form.buttons.first ) if @dontsubmit_flg == false
-
+puts "wrote2mixi."
     # TODO エラー処理実装
     return message
   end
@@ -138,10 +138,10 @@ class MixiClient
     timeline_diff = Array.new
     text = ''
     timeline.each{|text|
-      break if text == last_status
+      WWW::Mechanize.log.debug("text:#{text}, last_status:#{last_status}")
+      puts("text:#{text}, last_status:#{last_status}")
       timeline_diff << text
     }
-    return nil if text != last_status
 
     count = 0
     # 差分のみMixiEchoへ書き込み（古い順）
