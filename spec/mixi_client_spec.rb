@@ -19,9 +19,21 @@ describe 'MixiClientの仕様' do
 
   it '正しくログイン後、問題ないEchoしたらその文章が返ってくる' do
     @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
-    @mixiclient.activate_echo if @mixiclient.activate_echo? == false
     message = 'テストちゅう。問題ないエコー文章。From MixiClient'
     @mixiclient.write_echo(message).should == message
+  end
+
+  it 'エコー機能が無効であれば有効にすることが出来る' do
+    @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
+    @mixiclient.active_echo if @mixiclient.active_echo? == false
+    @mixiclient.active_echo?.should be_true
+  end
+
+  it '一度ログインしてそのログアウトしたらエコー書き込みに失敗する' do
+    @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
+    @mixiclient.logout.should be_true
+    message = '一度ログインしてそのログアウトしたらエコー書き込みに失敗するテストちゅう。From MixiClient'
+    @mixiclient.write_echo(message).should be_nil
   end
 
   it 'nilでログインするとnilが返ってくる'
@@ -34,7 +46,7 @@ describe 'MixiClientの仕様' do
     timeline = Array.new
     timeline << 'はじめのツブヤキ'
     timeline << '2回目のツブヤキ'
-    timeline << '3回目のツブヤキ'
-    @mixiclient.write_echos(timeline, '3回目のツブヤキ').should == 2
+    timeline << '3回目のツブヤキ(一番古い)'
+    @mixiclient.write_echos(timeline, '3回目のツブヤキ(一番古い)').should == 2
   end
 end

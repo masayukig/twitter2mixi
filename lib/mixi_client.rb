@@ -2,6 +2,7 @@ require 'rubygems'
 gem "mechanize", "0.8.5" 
 require 'mechanize'
 require 'kconv'
+require 'logger'
 
 # 環境準備
 # gem install mechanize --version "= 0.8.5"
@@ -11,13 +12,12 @@ class MixiClient
     # Mechanizeの初期化
     @agent = WWW::Mechanize.new
     @login_flg = false
+    @dontsubmit_flg = false
 
-    # TODO 出力
-    #require 'logger'
-    #WWW::Mechanize.log = Logger.new('mechlog.txt')
-    #WWW::Mechanize.log.level = Logger::INFO
-    #...
-    #WWW::Mechanize.log.info('login failed') if WWW::Mechanize.log
+    # ログ出力
+    WWW::Mechanize.log = Logger.new(File.expand_path(File.dirname(__FILE__)) + '/../log/mechanize.log')
+    WWW::Mechanize.log.level = Logger::INFO
+
   end
 
   # [email]
@@ -28,6 +28,8 @@ class MixiClient
   # Mixiへ ログイン
   # 成功したらTrueを返します。失敗したらFalseを返します。
   def login email, password
+    WWW::Mechanize.log.info("mixi login by #{email}")
+
     # ログインしている人でも一度強制ログアウト
     page = @agent.get('http://mixi.jp/logout.pl')
 
@@ -37,10 +39,10 @@ class MixiClient
     form.fields.find {|f| f.name == 'next_url'}.value = '/home.pl'
     page = @agent.submit(form, form.buttons.first)
 
+    # TODO もう少しまともなログイン判定を実装
     # とりあえず、
     # ログイン成功すると「text/html; charset=ISO-8859-1」が返ってきて
     # ログイン失敗すると「text/html; charset=EUC-JP」が返ってくる
-    # TODO もう少しまともなログイン判定を実装
     @login_flg = page.header['content-type'] == 'text/html; charset=ISO-8859-1'
   end
 
@@ -50,12 +52,12 @@ class MixiClient
 
     # ログアウトを開く
     page = @agent.get("http://mixi.jp/logout.pl")
+    # TODO もう少しまともなログイン判定を実装
+    @login_flg = page.header['content-type'] != 'text/html; charset=ISO-8859-1'
   end
 
   # Mixiエコーの利用を開始する
-  def activate_echo
-    # http://mixi.jp/guide_echo.pl
-    # <p class="mainlink1"><a href="change_opt_echo.pl?post_key=8824de56a580957abfa91ec87321ca03cb0ca378&opt_in=y"><img src="http://img.mixi.jp/img/func_intro/echo/ibtn_01seton.gif" width="457" height="87" alt="さっそく「エコー」をつかってみる！" class="btn_seton_echo" /><br /></a>
+  def active_echo
     return false if @login_flg == false
 
     # mixi エコー を開く
@@ -71,13 +73,13 @@ class MixiClient
     return false
   end
 
-  def activate_echo?
+  def active_echo?
     return false if @login_flg == false
 
     # mixi エコー を開く
     page = @agent.get("http://mixi.jp/recent_echo.pl")
 
-    # エコー書き込み
+    # エコー書き込み用のフォームを探す
     form = page.form_with(:action => 'add_echo.pl')
     # エコーをアクティベートしていないとフォーム取得できない
     return false if form == nil
@@ -87,6 +89,8 @@ class MixiClient
 
   # [message]
   #   1200文字以下のエコー文章
+  # [返り値]
+  #   ログインしていなければnilを返す
   #   
   # エコー書き込み
   # 正しく書き込めたらTrue、エラーしたらFalseを返します
@@ -95,16 +99,25 @@ class MixiClient
 
     # mixi エコー を開く
     page = @agent.get("http://mixi.jp/recent_echo.pl")
-
-    # エコー書き込み
+    # エコー書き込み用のフォームを探す
     form = page.form_with(:action => 'add_echo.pl')
-    # エコーをアクティベートしていないとフォーム取得できない
-    return nil if form == nil
+
+    # エコーをアクティベートしていなかったらアクティベート処理
+    if form == nil
+      active_echo
+      # mixi エコー を開く
+      page = @agent.get("http://mixi.jp/recent_echo.pl")
+      # エコー書き込み用のフォームを探す
+      form = page.form_with(:action => 'add_echo.pl')
+      # それでもフォーム取得できなければエラー
+      return nil if form == nil
+    end
+
     form.field_with(:name => 'body').value = message.toeuc
-    page = @agent.submit( form, form.buttons.first )
+    page = @agent.submit( form, form.buttons.first ) if @dontsubmit_flg == false
 
     # TODO エラー処理実装
-    return message if true
+    return message
   end
 
   # [timeline]
@@ -115,26 +128,33 @@ class MixiClient
   #   ツブヤキ件数
   # 
   # timelineの中に、last_statusがある時は、その前までMixiエコーに書き込みます
-  # timelineの中に、last_statusがない時は、timelineの全てをMixiエコーに書き込みます
+  # timelineの中に、last_statusがない時は、Mixiエコーを書き込まない(TLの最上部削除対応)
   def write_echos timeline, last_status
     return nil if @login_flg == false
-    return nil if timeline==nil
+    return nil if timeline == nil
+    return nil if last_status == nil
 
     # 最終更新ツブヤキの差分抽出
-    count = 0
     timeline_diff = Array.new
+    text = ''
     timeline.each{|text|
-      break if text == last_status && last_status != nil
+      break if text == last_status
       timeline_diff << text
-      count += 1
     }
+    return nil if text != last_status
 
+    count = 0
     # 差分のみMixiEchoへ書き込み（古い順）
     timeline_diff.reverse_each {|text|
-      write_echo text
+      count += 1 if write_echo(text) != nil
+      sleep 0.5
     }
 
     return count
+  end
+  
+  def dontsubmit
+    @dontsubmit_flg = true
   end
 
 end
