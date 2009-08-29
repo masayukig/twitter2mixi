@@ -21,9 +21,11 @@
   <div id="nav" style="float:right">
     <p>
       <% if @login_flg %>
-          <a href='/disconnect'>Logout</a>
+          <a href='/signup'>Mixiアカウント設定</a>
+        | <a href='/unregist'>退会</a>
+        | <a href='/disconnect'>ログアウト</a>
       <% else %>
-          <a href='/connect'>Login</a>
+          <a href='/connect'>ログイン(新規登録)</a>
       <% end %>
     </p>
   </div>

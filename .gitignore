@@ -1,5 +1,5 @@
 doc/*.lock
-view/_googleanalytics.erb
+views/_googleanalytics.erb
 config.yml
 nbproject/
 db

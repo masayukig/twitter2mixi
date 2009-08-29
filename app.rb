@@ -81,6 +81,38 @@ get '/success' do
   erb :success
 end
 
+# 退会
+get '/unregist' do
+  # 未ログインだったら/に戻す
+  if @login_flg
+    erb :unregist
+  else
+    redirect '/'
+  end
+end
+
+# 退会(実行)
+post '/unregist' do
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+
+  # もし直リンクだったら/に戻す
+  redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
+
+  if @@user_dao.unregist
+    @login_flg = nil
+    session[:login_flg] = nil
+    session[:access_token] = nil
+    session[:secret_token] = nil
+    @flash_mess = 'Twitter2mixi登録を解除しました。'
+    erb :unregist_success
+  else
+    @flash_mess = 'Twitter2mixi登録解除に失敗しました。'
+    erb :unregist
+  end
+end
+
+# OAuth承認
 # store the request tokens and send to Twitter
 get '/connect' do
   request_token = @client.request_token(:oauth_callback => @@config['oauth_confirm_url'])
@@ -88,7 +120,6 @@ get '/connect' do
   session[:request_token_secret] = request_token.secret
   redirect request_token.authorize_url
 end
-
 # auth URL is called by twitter after the user has accepted the application
 # this is configured on the Twitter application settings page
 get '/auth' do
@@ -114,6 +145,7 @@ get '/auth' do
   end
 end
 
+# ログアウト
 get '/disconnect' do
   # セッションの初期化
   session[:login_flg] = nil
@@ -125,30 +157,6 @@ get '/disconnect' do
   redirect '/'
 end
 
-get '/unregist' do
-  # 未ログインだったら/に戻す
-  if @login_flg
-    erb :unregist
-  else
-    redirect '/'
-  end
-end
-
-post '/unregist' do
-  # 未ログインだったら/に戻す
-  redirect '/' unless @login_flg
-
-  # もし直リンクだったら/に戻す
-  redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
-
-  if @@user_dao.unregist
-    @flash_mess = 'Twitter2mixi登録を解除しました。'
-    erb :unregist_success
-  else
-    @flash_mess = 'Twitter2mixi登録解除に失敗しました。'
-    erb :unregist
-  end
-end
 
 # 工事中画面
 get '/uc' do
