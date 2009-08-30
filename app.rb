@@ -8,9 +8,7 @@ require 'lib/user_dao'
 configure do
   set :sessions, true
   @@config = YAML.load_file("config.yml") rescue nil || {}
-  @@user_dao = UserDao.new @@config
   @@mixiclient = MixiClient.new
-  
   @@uc_flg = false
 end
 
@@ -20,12 +18,16 @@ before do
 
   # 工事中FLGですべての画面UCにリダイレクト
   redirect 'uc' if request.path_info != '/uc' && request.path_info != '/css/main.css' && @@uc_flg
-  @debug_flg = false
+  @debug_flg = true
 
-  # Twitterクライント接続不要箇所など非接続
+  # user_dao初期化
+  @user_dao = UserDao.new @@config
+  @user_dao.login session[:access_token], session[:secret_token]
+
   if request.path_info =~ /[.ico|.jpg|.css|^\/uc|^\/]$/
     @client = nil
   else
+    # Twitterクライント初期化
     @client = TwitterOAuth::Client.new(
      :consumer_key => @@config['consumer_key'],
       :consumer_secret => @@config['consumer_secret'],
@@ -48,11 +50,11 @@ get '/signup' do
 #  redirect '/' if session[:access_token] == nil || session[:secret_token] == nil
 
   @flash_mess = ''
-  if @@user_dao.login session[:access_token], session[:secret_token]
+  if @user_dao.login session[:access_token], session[:secret_token]
     @flash_mess = ''
   else
     @flash_mess = 'Twitter2mixiへ、ようこそ。'
-    @@user_dao.twitter_regist session[:access_token], session[:secret_token]
+    @user_dao.twitter_regist session[:access_token], session[:secret_token]
   end
   erb :signup
 end
@@ -66,7 +68,7 @@ post '/signup' do
 
   if @@mixiclient.login(params[:email], params[:password])
     @flash_mess = '正しいMixiのアカウント情報を確認できました。'
-    @@user_dao.mixi_regist params[:email], params[:password]
+    @user_dao.mixi_regist params[:email], params[:password]
     redirect '/success'
   else
     @flash_mess = 'Mixiのログインに失敗しました。'
@@ -99,7 +101,7 @@ post '/unregist' do
   # もし直リンクだったら/に戻す
   redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
 
-  if @@user_dao.unregist
+  if @user_dao.unregist
     @login_flg = nil
     session[:login_flg] = nil
     session[:access_token] = nil
