@@ -39,29 +39,29 @@ class Batch
           :token => user.twitter_token,
           :secret => user.twitter_secret
       )
-      created_at = nil
       # Twitterステータス20件取得
       timeline = Array.new
-      created_ats = Array.new # 最新のつぶやき時間を取得
-      # TODO mixi echoする分だけ、timelineに保持すれば良いのでは？
+      created_at = Time.parse(client.user[0]['created_at']) # 最新のつぶやき時間を取得
       client.user.each { |status|
         if "#{status.class}" == 'Hash'
             status_created_at = Time.parse(status['created_at'])
-            created_ats << status_created_at # 最新のつぶやき時間を取得
-            break if status_created_at <= user.last_tweeted_at.to_time # 既にmixi echo済み
+            break if user.last_tweeted_at != nil && status_created_at <= user.last_tweeted_at.to_time # 既にmixi echo済み
             text = status['text']
             timeline << replace(text)
         else
             puts "status.class is #{status.class}" if @debug_flg
         end
       }
+      # timeline チェック。echo対象つぶやきが無ければ、次のユーザ処理
+      if timeline.empty?
+        next
+      end
       # 一番初めの同期作業
       if user.last_tweeted_at == nil
         puts "一番初めの同期作業".tosjis if @debug_flg
 
         # 最終ステータスをDBに保存
-        user.last_status = timeline[0]
-        user.last_tweeted_at = created_ats[0] # 最新のつぶやき時間をDBに保持
+        user.last_tweeted_at = created_at # 最新のつぶやき時間をDBに保持
         user.save
         next
       end
@@ -69,8 +69,8 @@ class Batch
       # 最新のTwitterつぶやき時間 < DB上の最新Twitterつぶやき時間
       # ならば、何もしない
       # (Twitter上の最新つぶやきをユーザが手動削除にも対応できる)
-      if created_ats[0] < user.last_tweeted_at.to_time
-        puts "ユーザがつぶやきを削除?(created_ats[0]: #{created_ats[0]} , last_tweeted_at: #{user.last_tweeted_at} ".tosjis if @debug_flg
+      if created_at < user.last_tweeted_at.to_time
+        puts "ユーザがつぶやきを削除?(created_at: #{created_at} , last_tweeted_at: #{user.last_tweeted_at} ".tosjis if @debug_flg
 
         next
       end
@@ -82,15 +82,14 @@ class Batch
       # TODO falseが帰ってきた時の処理
 
       # エコー書き出し
-      echos = mixiclient.write_echos(timeline, user.last_status)
+      echos = mixiclient.write_echos(timeline)
       count += echos if echos != nil
       # Mixiからログアウトを行う
       mixiclient.logout
 
       # 最終ステータスをDBに保存
       if count != 0  # mixi echoしたときのみ、DB更新
-        user.last_status = timeline[0]
-        user.last_tweeted_at = created_ats[0]
+        user.last_tweeted_at = created_at
         user.save
       end
     }
