@@ -42,6 +42,7 @@ class Batch
       # Twitterステータス20件取得
       timeline = Array.new
       created_at = Time.parse(client.user[0]['created_at']) # 最新のつぶやき時間を取得
+      screen_name = client.user[0]['user']['screen_name'] # get screen_name
       client.user.each { |status|
         if "#{status.class}" == 'Hash'
             status_created_at = Time.parse(status['created_at'])
@@ -82,7 +83,7 @@ class Batch
       # TODO falseが帰ってきた時の処理
 
       # エコー書き出し
-      echos = mixiclient.write_echos(timeline)
+      echos = mixiclient.write_echos(timeline, screen_name)
       count += echos if echos != nil
       # Mixiからログアウトを行う
       mixiclient.logout

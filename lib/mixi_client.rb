@@ -89,12 +89,15 @@ class MixiClient
 
   # [message]
   #   1200文字以下のエコー文章
+  # [screen_name]
+  #   twitterのscreen_name
   # [返り値]
   #   ログインしていなければnilを返す
   #   
   # エコー書き込み
+  # 書き込む際に、"http://twitter.com/#{screen_name}"という文字列を後ろに付加します。
   # 正しく書き込めたらTrue、エラーしたらFalseを返します
-  def write_echo message
+  def write_echo message, screen_name
     return nil if @login_flg == false
 
     # mixi エコー を開く
@@ -113,7 +116,7 @@ class MixiClient
       return nil if form == nil
     end
 
-    form.field_with(:name => 'body').value = message.toeuc
+    form.field_with(:name => 'body').value = message.toeuc + "http://twitter.com/" + screen_name
     page = @agent.submit( form, form.buttons.first ) if @dontsubmit_flg == false
     # TODO エラー処理実装
     return message
@@ -121,18 +124,21 @@ class MixiClient
 
   # [timeline]
   #   最大20件の本人のツブヤキ配列（新しい順）
+  # [screen_name]
+  #   twitterのscreen_name
   # [返り値]
   #   ツブヤキ件数
   # 
   # 受け取ったtimelineを全てMixiエコーに書き込みます
-  def write_echos timeline
+  # 書き込む際に、"http://twitter.com/#{screen_name}"という文字列を後ろに付加します。
+  def write_echos timeline, screen_name
     return nil if @login_flg == false
     return nil if timeline == nil
 
     count = 0
     # 差分のみMixiEchoへ書き込み（古い順）
     timeline.reverse_each {|text|
-      count += 1 if write_echo(text) != nil
+      count += 1 if write_echo(text, screen_name) != nil
       sleep 0.5
     }
 
