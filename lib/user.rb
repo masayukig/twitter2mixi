@@ -10,6 +10,7 @@ class User
     property :twitter_secret, String, :size => 500
     property :mixi_email, String, :size => 500
     property :mixi_password, String, :size => 500
+    property :twitter_url, String, :size => 30
     property :last_tweeted_at, DateTime
     property :created_at, DateTime
     property :updated_at, DateTime

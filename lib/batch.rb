@@ -5,6 +5,9 @@ require 'lib/mixi_client'
 require 'dm-core'
 require 'lib/user'
 require 'time'
+require 'net/http'
+require 'uri'
+require 'json'
 
 class Batch
   def initialize config
@@ -53,6 +56,33 @@ class Batch
             puts "status.class is #{status.class}" if @debug_flg
         end
       }
+
+      puts "user.twitter_url:#{user.twitter_url}"
+      # twitter_urlがあるか？をチェック
+      if user.twitter_url == nil
+        # 無ければbit.lyで生成してDBに保存
+        url = "http://api.bit.ly/shorten?version=2.0.1&longUrl=http://twitter.com/"
+        url += screen_name + "&login=" + @@config['bitly_login_id'] + "&apiKey=" + @@config['bitly_api_key']
+        uri = URI.parse(url)
+        # TODO エラー処理実装
+        Net::HTTP.start(uri.host, uri.port) do |http|
+          puts "http:#{http}"
+          request = Net::HTTP::Get.new(uri.request_uri)
+          http.request(request) do |response|
+            #raise 'Response is not chuncked' unless response.chunked?
+            response.read_body do |body|
+              # 空行は無視する = JSON形式でのパースに失敗したら次へ
+              bitly_response = JSON.parse(body) rescue next
+              # 削除通知など、'text'パラメータを含まないものは無視して次へ
+              next unless bitly_response['results']
+              user.twitter_url = bitly_response['results']['http://twitter.com/' + screen_name]['shortUrl']
+              user.save
+              puts "user.twitter_url:#{user.twitter_url}"
+            end
+          end
+        end
+      end
+
       # timeline チェック。echo対象つぶやきが無ければ、次のユーザ処理
       if timeline.empty?
         next
@@ -83,7 +113,7 @@ class Batch
       # TODO falseが帰ってきた時の処理
 
       # エコー書き出し
-      echos = mixiclient.write_echos(timeline, screen_name)
+      echos = mixiclient.write_echos(timeline, user.twitter_url)
       count += echos if echos != nil
       # Mixiからログアウトを行う
       mixiclient.logout
