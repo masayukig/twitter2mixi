@@ -116,6 +116,11 @@ class MixiClient
       return nil if form == nil
     end
 
+    if (message.toeuc + " " + twitter_url).split(//e).length > 150
+      url_length = (" " + twitter_url).length
+      message_length = 150 - url_length - 2 # ".."分も削除
+      message = message.toeuc.split(//e)[0..message_length - 1].join + ".."
+    end
     form.field_with(:name => 'body').value = message.toeuc + " " + twitter_url
     page = @agent.submit( form, form.buttons.first ) if @dontsubmit_flg == false
     # TODO エラー処理実装
