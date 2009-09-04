@@ -185,5 +185,8 @@ class UserDao
     end
   end
 
+  def get_all_count
+    return User.all.count
+  end
 end
 
