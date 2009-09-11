@@ -1,7 +1,7 @@
 <html>
 <head>
   <title>Twitter2mixi | TwitterしたらMixiエコーに自動送信!! </title>
-  <link href="/css/main.css" media="screen" rel="Stylesheet" type="text/css" />
+  <link href="/css/style.css" media="all" rel="Stylesheet" type="text/css" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
@@ -9,26 +9,40 @@
 <%= session[:access_token] if @debug_flg %>
 <%= '<br>' if @debug_flg %>
 <%= session[:secret_token] if @debug_flg %>
-<div id="content">
-  <div id="header">
+<div id="header">
     <div>
-      <h1><a href='/'>Twitter2Mixi</a> <font size=2 color='#a0a0a0'>ver alfa</font></h1>
-      <small>TwitterしたらMixiエコーに自動送信!! 現在：<%= @user_dao.get_all_count %>人が利用中!</small>
+        <h1><a href='/'>Twitter2Mixi</a>
+            <font size=2 color='#a0a0a0'>
+                ver alfa
+            </font>
+            <font size=3 class="white">
+                TwitterしたらMixiエコーに自動送信!! 現在：<%= @user_dao.get_all_count %>人が利用中!
+            </font>
+        </h1>
+        <h2 class="white">
+            
+        </h2>
     </div>
     <br clear="all"/>
-  </div>
+    <div class="shell">
+        <div id="head">
+            <div class="right">
+                <p>
+                    <% if @login_flg %>
+                    <a href='/signup'>Mixiアカウント設定</a>
+                    | <a href='/unregist'>退会</a>
+                    | <a href='/disconnect'>ログアウト</a>
+                    <% else %>
+                    <a href='/connect'>ログイン(新規登録)</a>
+                    <% end %>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+  <div id="content" class="shell">
   
-  <div id="nav" style="float:right">
-    <p>
-      <% if @login_flg %>
-          <a href='/signup'>Mixiアカウント設定</a>
-        | <a href='/unregist'>退会</a>
-        | <a href='/disconnect'>ログアウト</a>
-      <% else %>
-          <a href='/connect'>ログイン(新規登録)</a>
-      <% end %>
-    </p>
-  </div>
+
   <br clear="all"/>
 
   <%= yield %>
@@ -37,6 +51,10 @@
     <br/>
     <small>
       copyright <a href='http://cyberwave.jp/nashiki/' target='_blank'>cyberwave.jp</a>
+    </small>
+    <br/>
+    <small>
+      original template from <a href='http://chocotemplates.com/' target='_blank'>chocotemplates.com</a>
     </small>
   </div>
   
