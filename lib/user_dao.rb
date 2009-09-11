@@ -148,6 +148,20 @@ class UserDao
     return user.last_status
   end
 
+  # [echo_twitter_url]
+  #   Twitter URLをMixi エコーにechoするか否かのフラグ。(1:出力する。0:出力しない)
+  # [返り値]
+  #   true: 正常終了
+  #   false: 異常終了
+  def update_echo_twitter_url echo_twitter_url
+    return false if @login_flg == false
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return false if user == nil
+    user.attributes = {:echo_twitter_url => echo_twitter_url}
+    user.save
+    return true
+  end
+
   # [screen_name]
   #   MixiのEメールtwitterのscreen name
   # [返り値]

@@ -56,11 +56,15 @@ class Batch
       }
 
       puts "user.twitter_url:#{user.twitter_url}"
-      # twitter_urlがあるか？をチェック
-      if user.twitter_url == nil || user.twitter_url == ''
+      # ユーザがtwitter_urlのechoを希望している、かつ、twitter_urlがあるか？をチェック
+      if user.echo_twitter_url == '1' && (user.twitter_url == nil || user.twitter_url == '')
          # user_dao初期化
         @user_dao = UserDao.new @@config
         @user_dao.save_short_users_url(screen_name, user.twitter_token, user.twitter_secret)
+      end
+      if user.echo_twitter_url != '1'
+        # ユーザがtwitter_urlのechoを希望していなければ、twitter_urlをクリア
+        user.twitter_url = ''
       end
 
       # timeline チェック。echo対象つぶやきが無ければ、次のユーザ処理

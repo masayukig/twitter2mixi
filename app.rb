@@ -147,6 +147,31 @@ get '/auth' do
   end
 end
 
+# 各種設定画面
+get '/setting' do
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+  
+  erb :setting
+end
+
+post '/setting' do
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+  # もし直リンクだったら/に戻す
+  redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
+
+  echo_twitter_url = '0'
+  echo_twitter_url = '1' if params[:echo_twitter_url]
+  @user_dao.update_echo_twitter_url echo_twitter_url
+  
+
+  @flash_mess = 'Twitter2mixi設定を更新しました。'
+
+  erb :setting
+end
+
+
 # ログアウト
 get '/disconnect' do
   # セッションの初期化

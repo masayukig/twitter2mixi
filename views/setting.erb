@@ -1,0 +1,22 @@
+<center>
+<p>
+<% if @flash_mess && @flash_mess != '' %>
+    <div class="message thank-message">
+        <p><strong><%= @flash_mess%></strong></p>
+    </div>
+<% end %>
+<h1>Twitter2Mixi設定</h1>
+<br>
+</center>
+
+<center><br><br>
+<h2>
+Twitter URLを、Mixi みんなのエコーに追加
+</h2>
+
+<form method="post" action="/setting">
+      Twitter URLを、Mixi みんなのエコーに追加：
+      <input type="checkbox" name="echo_twitter_url" value="1" <%= 'checked' if params[:echo_twitter_url] %>/><br>
+      <input type="submit" value="　Twitter2Mixi設定更新　" />
+</form>
+</center>
