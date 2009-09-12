@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'dm-core'
 require 'lib/user'
+require 'lib/hatena_client'
 require 'net/http'
 require 'uri'
 require 'json'
@@ -162,6 +163,40 @@ class UserDao
     return true
   end
 
+  # [id]
+  #   Hatena ID
+  # [password]
+  #   Hatena Haikuのパスワード
+  # [返り値]
+  #   true: 正常終了
+  #   false: 異常終了
+  def update_hatena_haiku_setting id, password
+    return false if @login_flg == false
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return false if user == nil
+    # TODO ID, password確認処理
+    # hatena haikuへログイン
+    hatenaclient = HatenaClient.new
+    is_success = hatenaclient.login_haiku(id, password)
+    return false if is_success == false  # ログイン失敗 == ユーザID、パスワード不正
+    
+    user.attributes = {:hatena_id => id, :hatena_haiku_password => password}
+    user.save
+    return true
+  end
+
+  # ユーザの設定値を取得します
+  # [返り値]
+  #   nil以外:検索結果
+  #   nil: 異常終了(該当データなし)
+  def get_settings
+    return nil if @login_flg == false
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return nil if user == nil
+
+    return user
+  end
+  
   # [screen_name]
   #   MixiのEメールtwitterのscreen name
   # [返り値]

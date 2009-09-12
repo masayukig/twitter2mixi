@@ -1,22 +1,36 @@
+<h1>Twitter2Mixi設定</h1>
 <center>
-<p>
-<% if @flash_mess && @flash_mess != '' %>
-    <div class="message thank-message">
-        <p><strong><%= @flash_mess%></strong></p>
+<% if @flash_error_mess && @flash_error_mess != '' %>
+    <div class="message error-message">
+        <p><strong><%= @flash_error_mess%></strong></p>
     </div>
 <% end %>
-<h1>Twitter2Mixi設定</h1>
+<% if @flash_thank_mess && @flash_thank_mess != '' %>
+    <div class="message thank-message">
+        <p><strong><%= @flash_thank_mess%></strong></p>
+    </div>
+<% end %>
+</center>
 <br>
-</center>
 
-<center><br><br>
-<h2>
-Twitter URLを、Mixi みんなのエコーに追加
-</h2>
+<br><br>
 
+<hr />
 <form method="post" action="/setting">
-      Twitter URLを、Mixi みんなのエコーに追加：
-      <input type="checkbox" name="echo_twitter_url" value="1" <%= 'checked' if params[:echo_twitter_url] %>/><br>
-      <input type="submit" value="　Twitter2Mixi設定更新　" />
+      <center>
+      <h2><a href="/">Twitter2Mixi</a>設定</h2>
+
+            <label>文末にTwitter URLを追加する</label>
+            <input type="checkbox" name="echo_twitter_url" value="1" <%= 'checked' if params[:echo_twitter_url] != nil && params[:echo_twitter_url] == '1' %>/>
+<hr />
+      <h2><a href="http://h.hatena.ne.jp/">Hatena Haiku</a>設定</h2>
+
+        <label>HatenaのID</label>
+        <input type="text" size="20" name="hatena_id" value="<%= params[:hatena_id] %>" />
+        <label>Hatena <strong>Haiku</strong>のパスワード</label>
+        <input type="password" size="20" name="hatena_haiku_password" value="<%= params[:hatena_haiku_password] %>" />
+
+<hr />
+<input type="submit" value="　Twitter2Mixi設定更新　" /></center>
 </form>
-</center>
+

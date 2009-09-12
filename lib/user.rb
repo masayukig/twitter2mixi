@@ -10,6 +10,8 @@ class User
     property :twitter_secret, String, :size => 500
     property :mixi_email, String, :size => 500
     property :mixi_password, String, :size => 500
+    property :hatena_id, String, :size => 500
+    property :hatena_haiku_password, String, :size => 500
     property :echo_twitter_url, String, :size => 1
     property :twitter_url, String, :size => 30
     property :last_tweeted_at, DateTime

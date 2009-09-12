@@ -61,6 +61,7 @@ h6 { font-size:12px; line-height:16px; padding-bottom:5px; }
 #content li{ padding-bottom:3px; }
 #content a { text-decoration: underline;}
 #content a:hover { text-decoration: none;}
+#content label { display: block; margin-bottom: 5px; padding-left: 3px; }
 
 #footer { text-align: center; font-size:11px; padding:10px 0 20px 0; color:#9d5b00; }
 #footer a{ color:#563609; }

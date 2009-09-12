@@ -151,6 +151,10 @@ end
 get '/setting' do
   # 未ログインだったら/に戻す
   redirect '/' unless @login_flg
+  user = @user_dao.get_settings
+  params[:echo_twitter_url] = user.echo_twitter_url
+  params[:hatena_id] = user.hatena_id
+  params[:hatena_haiku_password] = user.hatena_haiku_password
   
   erb :setting
 end
@@ -164,9 +168,15 @@ post '/setting' do
   echo_twitter_url = '0'
   echo_twitter_url = '1' if params[:echo_twitter_url]
   @user_dao.update_echo_twitter_url echo_twitter_url
+  is_hatena_success = @user_dao.update_hatena_haiku_setting(params[:hatena_id], params[:hatena_haiku_password])
   
-
-  @flash_mess = 'Twitter2mixi設定を更新しました。'
+  if (is_hatena_success == true)
+    @flash_thank_mess = 'Twitter2mixi設定を更新しました。'
+  else
+    @flash_error_mess = 'Twitter2mixi設定を更新失敗しました。('
+    @flash_error_mess += 'Hatena Haikuの設定が正しくありません' if is_hatena_success == false
+    @flash_error_mess += ')'
+  end
 
   erb :setting
 end

@@ -2,6 +2,7 @@ require 'rubygems'
 require 'twitter_oauth'
 require 'kconv'
 require 'lib/mixi_client'
+require 'lib/hatena_client'
 require 'dm-core'
 require 'lib/user'
 require 'time'
@@ -98,9 +99,19 @@ class Batch
 
       # エコー書き出し
       echos = mixiclient.write_echos(timeline, user.twitter_url)
+      
       count += echos if echos != nil
       # Mixiからログアウトを行う
       mixiclient.logout
+
+      # Hatena haiku書き出し処理
+      if user.hatena_id != nil && user.hatena_id != ''
+        # hatena haikuへログイン
+        hatenaclient = HatenaClient.new
+        is_success = hatenaclient.login_haiku(user.hatena_id, user.hatena_haiku_password)
+        # haiku書き出し
+        hatenaclient.write_haikus(timeline, user.twitter_url)
+      end
 
       # 最終ステータスをDBに保存
       if count != 0  # mixi echoしたときのみ、DB更新

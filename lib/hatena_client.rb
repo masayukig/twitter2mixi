@@ -30,9 +30,19 @@ class HatenaClient
   def login_haiku id, password
     WWW::Mechanize.log.info("haiku login by #{id}")
 
-    @agent.auth(id, password)
-    # TODO ログイン判定
-    @login_flg = true
+    is_success = false
+    result = ''
+    begin
+      result = @agent.auth(id, password)
+      is_success = true
+    rescue
+      WWW::Mechanize.log.warn("haiku login failed. #{$!}")
+      @login_flg = false
+      is_success = false
+    end
+    WWW::Mechanize.log.info("hatena haiku login result:#{is_success}:" + result)
+    @login_flg = is_success
+    return is_success
   end
 
   # TODO ログアウト処理実装 （必要？)
@@ -59,10 +69,12 @@ class HatenaClient
   def write_haiku message, twitter_url
     return nil if @login_flg == false
 
-    # hatena haiku へ書き込み
-    page = @agent.post("http://h.hatena.ne.jp/api/statuses/update.json", {"status" => message})
-
-    # TODO エラー処理実装
+    begin
+      # hatena haiku へ書き込み
+      page = @agent.post("http://h.hatena.ne.jp/api/statuses/update.json", {"status" => message + twitter_url})
+    rescue
+      # TODO エラー処理実装
+    end
     return message
   end
 
