@@ -3,6 +3,7 @@ require 'twitter_oauth'
 require 'kconv'
 require 'lib/mixi_client'
 require 'lib/hatena_client'
+require 'lib/wasser_client'
 require 'dm-core'
 require 'lib/user'
 require 'time'
@@ -104,6 +105,13 @@ class Batch
       # Mixiからログアウトを行う
       mixiclient.logout
 
+      # wasser書き出し処理
+      # FIXME:暫定
+      wasserclient = WasserClient.new
+      is_success = wasserclient.login_wasser(user.wasser_id, user.wasser_password)
+      puts "is_success:#{is_success}"
+      # wasser 書き出し
+      wasserclient.write_wassers(timeline, user.twitter_url)
       # Hatena haiku書き出し処理
       if user.hatena_id != nil && user.hatena_id != ''
         # hatena haikuへログイン
