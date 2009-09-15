@@ -31,7 +31,6 @@ class HatenaClient
     WWW::Mechanize.log.info("haiku login by #{id}")
 
     is_success = false
-    result = ''
     begin
       result = @agent.auth(id, password)
       is_success = true
@@ -40,7 +39,7 @@ class HatenaClient
       @login_flg = false
       is_success = false
     end
-    WWW::Mechanize.log.info("hatena haiku login result:#{is_success}:" + result)
+    WWW::Mechanize.log.info("hatena haiku login result:#{is_success}")
     @login_flg = is_success
     return is_success
   end

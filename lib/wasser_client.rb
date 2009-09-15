@@ -40,7 +40,7 @@ class WasserClient
       @login_flg = false
       is_success = false
     end
-    WWW::Mechanize.log.info("wasser login result:#{is_success}:" + result)
+    WWW::Mechanize.log.info("wasser login result:#{is_success}:#{result}")
     @login_flg = is_success
     return is_success
   end
