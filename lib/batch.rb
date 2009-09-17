@@ -108,7 +108,7 @@ class Batch
       
       count += echos if echos != nil
       # Mixiからログアウトを行う
-      mixiclient.logout
+      #mixiclient.logout
 
       # wasser書き出し処理
       # FIXME:暫定
