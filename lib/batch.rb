@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'rubygems'
 require 'twitter_oauth'
 require 'kconv'
@@ -48,12 +49,16 @@ class Batch
       screen_name = client.user[0]['user']['screen_name'] # get screen_name
       client.user.each { |status|
         if "#{status.class}" == 'Hash'
-            status_created_at = Time.parse(status['created_at'])
-            break if user.last_tweeted_at != nil && status_created_at <= user.last_tweeted_at.to_time # 既にmixi echo済み
-            text = status['text']
-            timeline << replace(text)
+          status_created_at = Time.parse(status['created_at'])
+          break if user.last_tweeted_at != nil && status_created_at <= user.last_tweeted_at.to_time # 既にmixi echo済み
+          text = status['text']
+          text = replace(text)
+          text = delete_reply(text)
+          if (text != nil && text != '')
+            timeline << text
+          end
         else
-            puts "status.class is #{status.class}" if @debug_flg
+          puts "status.class is #{status.class}" if @debug_flg
         end
       }
 
@@ -136,6 +141,12 @@ class Batch
     # TODO 他の特殊文字でどのようになるか調査、機種依存文字、TAB、<>タグなど
     text = text.gsub(/\r\n|\r|\n/, ' ')
     text = text.chomp
+  end
+
+  # @で始まる文字列を削除
+  # twitterの返信は他のサービスに転送したくない人のための機能
+  def delete_reply_status text
+    text = text.gsub(/^@.*/, '')
   end
 end
 
