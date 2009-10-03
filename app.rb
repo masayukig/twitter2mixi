@@ -155,7 +155,10 @@ get '/setting' do
   params[:echo_twitter_url] = user.echo_twitter_url
   params[:hatena_id] = user.hatena_id
   params[:hatena_haiku_password] = user.hatena_haiku_password
-  
+  params[:gcal_mail] = user.gcal_mail
+  params[:gcal_password] = user.gcal_password
+  params[:gcal_feed_url] = user.gcal_feed_url
+
   erb :setting
 end
 
@@ -170,6 +173,9 @@ post '/setting' do
   @user_dao.update_echo_twitter_url echo_twitter_url
   is_hatena_success = @user_dao.update_hatena_haiku_setting(params[:hatena_id], params[:hatena_haiku_password])
   
+  # Gcal mail, pass, url保存
+  is_gcal_success = @user_dao.update_gcal_setting(params)
+
   if (is_hatena_success == true)
     @flash_thank_mess = 'Twitter2mixi設定を更新しました。'
   else

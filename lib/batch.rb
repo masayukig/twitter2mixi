@@ -5,10 +5,12 @@ require 'kconv'
 require 'lib/mixi_client'
 require 'lib/hatena_client'
 require 'lib/wasser_client'
+require 'lib/gcal_client'
 require 'dm-core'
 require 'lib/user'
 require 'time'
 require 'lib/user_dao'
+require 'lib/timeline'
 
 class Batch
   def initialize config
@@ -45,6 +47,7 @@ class Batch
       )
       # Twitterステータス20件取得
       timeline = Array.new
+      timelines = Array.new # TODO timelineクラスを作成し、それで管理？？
       created_at = Time.parse(client.user[0]['created_at']) # 最新のつぶやき時間を取得
       screen_name = client.user[0]['user']['screen_name'] # get screen_name
       client.user.each { |status|
@@ -53,9 +56,14 @@ class Batch
           break if user.last_tweeted_at != nil && status_created_at <= user.last_tweeted_at.to_time # 既にmixi echo済み
           text = status['text']
           text = replace(text)
-          text = delete_reply(text)
+          text = delete_reply_status(text)
           if (text != nil && text != '')
             timeline << text
+            # TODO 現在、gcal_clientしか使用していないが、他clientもtimelinesを使用するようにする
+            timeline_tmp = Timeline.new
+            timeline_tmp.text = text
+            timeline_tmp.created_at = created_at
+            timelines << timeline_tmp
           end
         else
           puts "status.class is #{status.class}" if @debug_flg
@@ -125,6 +133,11 @@ class Batch
         # haiku書き出し
         hatenaclient.write_haikus(timeline, user.twitter_url)
       end
+      
+      # Gcal書き出し
+      gcalclient = GcalClient.new
+      is_success = gcalclient.login(user.gcal_mail, user.gcal_password, user.gcal_feed_url)
+      gcalclient.write_messages(timelines, user.twitter_url)
 
       # 最終ステータスをDBに保存
       if count != 0  # mixi echoしたときのみ、DB更新

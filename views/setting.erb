@@ -31,6 +31,15 @@
         <input type="password" size="20" name="hatena_haiku_password" value="<%= params[:hatena_haiku_password] %>" />
 
 <hr />
+        <label>Google Calendarのメールアドレス</label>
+        <input type="text" size="20" name="gcal_mail" value="<%= params[:gcal_mail] %>" />
+        <label>Google Calendarのパスワード</label>
+        <input type="password" size="20" name="gcal_password" value="<%= params[:gcal_password] %>" />
+        <label>Google CalendarのFeed URL</label>
+        <input type="text" size="70" name="gcal_feed_url" value="<%= params[:gcal_feed_url] %>" /><br />
+        例:http://www.google.com/calendar/feeds/xxxxxxxxxxxxxxxxx@group.calendar.google.com/private/full<br />
+
+<hr />
 <input type="submit" value="　Twitter2Mixi設定更新　" /></center>
 </form>
 

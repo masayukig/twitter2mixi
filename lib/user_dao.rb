@@ -185,6 +185,23 @@ class UserDao
     return true
   end
 
+  # [params]
+  #   入力値
+  # [返り値]
+  #   true: 正常終了
+  #   false: 異常終了
+  def update_gcal_setting params
+    return false if @login_flg == false
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return false if user == nil
+
+    # TODO ID, password確認処理実装
+
+    user.attributes = {:gcal_mail => params[:gcal_mail], :gcal_password => params[:gcal_password], :gcal_feed_url => params[:gcal_feed_url]}
+    user.save
+    return true
+  end
+
   # ユーザの設定値を取得します
   # [返り値]
   #   nil以外:検索結果

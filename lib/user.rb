@@ -14,6 +14,9 @@ class User
     property :hatena_haiku_password, String, :size => 500
     property :wasser_id, String, :size => 500
     property :wasser_password, String, :size => 500
+    property :gcal_feed_url, String, :size => 500
+    property :gcal_mail, String, :size => 500
+    property :gcal_password, String, :size => 500
     property :echo_twitter_url, String, :size => 1
     property :twitter_url, String, :size => 30
     property :last_tweeted_at, DateTime
