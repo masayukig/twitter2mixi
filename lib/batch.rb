@@ -11,6 +11,7 @@ require 'lib/user'
 require 'time'
 require 'lib/user_dao'
 require 'lib/timeline'
+require 'thread'
 
 class Batch
   def initialize config
@@ -21,18 +22,18 @@ class Batch
     DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{@@config['env']}.db")
     DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@@config['env']}.log", 0)
     DataMapper.auto_upgrade!
-    
+
     @debug_flg = true
   end
 
   # [返り値]
   #   Twitter2Mixiしたツブヤキの合計数
   #
-  def execute
+  def execute user_q
     count = 0
-    users = User.all
-    users.each {|user|
-      next if user == nil
+    while true
+      user = user_q.pop
+      return count if user == nil
       next if user.twitter_token == nil || user.twitter_secret == nil
       next if user.mixi_email == nil    || user.mixi_password == nil
 
@@ -73,7 +74,7 @@ class Batch
       puts "user.twitter_url:#{user.twitter_url}"
       # ユーザがtwitter_urlのechoを希望している、かつ、twitter_urlがあるか？をチェック
       if user.echo_twitter_url == '1' && (user.twitter_url == nil || user.twitter_url == '')
-         # user_dao初期化
+        # user_dao初期化
         @user_dao = UserDao.new @@config
         @user_dao.save_short_users_url(screen_name, user.twitter_token, user.twitter_secret)
       end
@@ -101,19 +102,18 @@ class Batch
       # (Twitter上の最新つぶやきをユーザが手動削除にも対応できる)
       if created_at < user.last_tweeted_at.to_time
         puts "ユーザがつぶやきを削除?(created_at: #{created_at} , last_tweeted_at: #{user.last_tweeted_at} ".tosjis if @debug_flg
-
         next
       end
 
       # Mixiへログインする
       mixiclient = MixiClient.new
-#      mixiclient.dontsubmit if @debug_flg
+      #      mixiclient.dontsubmit if @debug_flg
       mixiclient.login(user.mixi_email, user.mixi_password)
       # TODO falseが帰ってきた時の処理
 
       # エコー書き出し
       echos = mixiclient.write_echos(timeline, user.twitter_url)
-      
+
       count += echos if echos != nil
       # Mixiからログアウトを行う
       #mixiclient.logout
@@ -133,7 +133,7 @@ class Batch
         # haiku書き出し
         hatenaclient.write_haikus(timeline, user.twitter_url)
       end
-      
+
       # Gcal書き出し
       gcalclient = GcalClient.new
       is_success = gcalclient.login(user.gcal_mail, user.gcal_password, user.gcal_feed_url)
@@ -144,22 +144,44 @@ class Batch
         user.last_tweeted_at = created_at
         user.save
       end
-    }
+    end
 
     return count
   end
-
+  
   # Twitterの文字列を置換
   def replace text
     # TODO 他の特殊文字でどのようになるか調査、機種依存文字、TAB、<>タグなど
     text = text.gsub(/\r\n|\r|\n/, ' ')
     text = text.chomp
   end
-
+  
   # @で始まる文字列を削除
   # twitterの返信は他のサービスに転送したくない人のための機能
   def delete_reply_status text
     text = text.gsub(/^@.*/, '')
+  end
+
+  def main
+    max_thread = @@config['max_thread_number']
+    user_q = Queue.new
+
+    User.all.each { |user|
+      user_q.push(user)
+    }
+    for i in 1..max_thread
+      user_q.push(nil)
+    end
+    count = 0
+    threads = []
+    for i in 1..max_thread
+      threads.push(Thread.new {
+        count += execute user_q
+      })
+    end
+    threads.each {|t| p t.join.value}
+
+    return count
   end
 end
 
@@ -170,7 +192,7 @@ config = YAML.load_file(File.expand_path(File.dirname(__FILE__)) + '/../config.y
 
 # バッチ処理実行
 batch = Batch.new config
-count = batch.execute
+count = batch.main
 
 # 終了メッセージ
 puts "twitter2mixi: #{count}"
