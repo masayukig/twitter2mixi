@@ -21,24 +21,27 @@ class Batch
     count = 0
     while true
       user = user_q.pop
-      puts "[#{no}]Finish: count=#{count}" if user == nil
-      return count if user == nil
+      if user == nil
+        puts "[#{no}]Finish: count=#{count}" 
+        return count
+      end
+      
       next if user.twitter_token == nil || user.twitter_secret == nil
       next if user.mixi_email == nil    || user.mixi_password == nil
 
-      puts "[#{no}]Start: #{Time.new} mixi_account=#{user.mixi_email}" if @debug_flg
+      puts "[#{no}]Start: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")} mixi_account=#{user.mixi_email}" if @debug_flg
 
       # ショートURLの生成
       # twitter_urlがあるか？をチェック
 #      puts "[#{no}]user.twitter_url:#{user.twitter_url}" if @debug_flg
 #      if user.twitter_url == nil || user.twitter_url == ''
-#        # user_dao初期化
+        # user_dao初期化
 #        user_dao = UserDao.new @config
-#        # 一度ログインし、Twitter向けのアドレス生成
+        # 一度ログインし、Twitter向けのアドレス生成
 #        user_dao.login user.twitter_token, user.twitter_secret
 #        user_dao.make_short_twitter_url screen_name
 #      end
-#
+
       # Twitterクライント準備
       client = TwitterOAuth::Client.new(
           :consumer_key => @config['consumer_key'],
@@ -103,15 +106,13 @@ class Batch
 
       # Mixiへログインする
       mixiclient = MixiClient.new
-#      mixiclient.dontsubmit if @debug_flg
+#     mixiclient.dontsubmit if @debug_flg
       mixiclient.login(user.mixi_email, user.mixi_password)
       # TODO falseが帰ってきた時の処理
 
       # エコー書き出し
       echos = mixiclient.write_echos(timeline)
       count += echos if echos != nil
-      # Mixiからログアウトを行う
-      #mixiclient.logout
 
       # 最終ステータスをDBに保存
       if count != 0  # mixi echoしたときのみ、DB更新
@@ -120,7 +121,7 @@ class Batch
       end
     end
 
-    return count
+    # ここに処理は来ない
   end
 
   # Twitterの文字列を置換
@@ -136,8 +137,7 @@ class Batch
     text = text.gsub(/^@.*/, '')
   end
 
-  def main
-    max_thread = @config['max_thread_number']
+  def main max_thread
     user_q = Queue.new
 
     User.all.each { |user|
@@ -155,7 +155,9 @@ class Batch
       threads.push(Thread.new {
         count += execute user_q, no
       })
+#      puts "start up no.#{no} thread."
     end
+    threads.each {|t| p t.join.value}
 
     return count
   end
@@ -171,13 +173,14 @@ DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{config['env']}.db")
 #DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{config['env']}.log", 0)
 DataMapper.auto_upgrade!
 
-puts 'start twiter2mixi batch'
-
+puts "Start twiter2mixi batch at #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
+puts "max_thread_number = #{config['max_thread_number']}"
 
 # バッチ処理実行
 batch = Batch.new config
-count = batch.main
+count = batch.main config['max_thread_number']
+
 
 # 終了メッセージ
 puts "twitter2mixi: #{count}"
-puts 'finish!'
+puts "Finish! at #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
