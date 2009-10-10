@@ -96,8 +96,9 @@ class Batch
       begin
         client.user.each { |status|
           if "#{status.class}" == 'Hash'
+            # 既にmixi echo済みだったらBreak
             status_created_at = Time.parse(status['created_at'])
-            break if user.last_tweeted_at != nil && status_created_at <= user.last_tweeted_at.to_time # 既にmixi echo済み
+            break if user.last_tweeted_at != nil && status_created_at <= user.last_tweeted_at.to_time
             text = status['text']
             text = replace(text)
             text = delete_reply_status(text)
@@ -117,6 +118,7 @@ class Batch
         p $!
         next
       end
+
       # timeline チェック。echo対象つぶやきが無ければ、次のユーザ処理
       if timeline.empty?
         puts "[#{no}]つぶやき対象無し".tosjis if @debug_flg
@@ -137,6 +139,7 @@ class Batch
 
       # Mixiへログインする
       mixiclient = MixiClient.new
+      #     mixiclient.dontsubmit if @debug_flg
       mixiclient.login(user.mixi_email, user.mixi_password)
       # TODO falseが帰ってきた時の処理
 
@@ -145,8 +148,6 @@ p timeline
       # エコー書き出し
       echos = mixiclient.write_echos(timeline, user.twitter_url)
       count += echos if echos != nil
-      # Mixiからログアウトを行う
-      #mixiclient.logout
 
       # wasser書き出し処理
       # FIXME:暫定
@@ -178,7 +179,7 @@ p timeline
 
     # ここに処理は来ない
   end
-  
+
   # Twitterの文字列を置換
   def replace text
     # TODO 他の特殊文字でどのようになるか調査、機種依存文字、TAB、<>タグなど
@@ -234,6 +235,7 @@ puts "max_thread_number = #{config['max_thread_number']}"
 # バッチ処理実行
 batch = Batch.new config
 count = batch.main config['max_thread_number']
+
 
 # 終了メッセージ
 puts "twitter2mixi: #{count}"
