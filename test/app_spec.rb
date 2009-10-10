@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'test/spec_helper'
 require 'app'
 
 describe 'GET /' do

@@ -10,3 +10,13 @@
 # gem install rack-test
 # gem install win32console # もしWindows上で動かす時
 
+
+##
+## 設定ファイル準備
+##
+#
+# config.sample.ymlから、config.ymlを作成
+# view/_googleanalytics.sample.erb から _googleanalytics.erbを作成
+
+
+

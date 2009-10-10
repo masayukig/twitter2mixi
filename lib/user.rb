@@ -11,7 +11,7 @@ class User
     property :mixi_email, String, :size => 500
     property :mixi_password, String, :size => 500
     property :twitter_url, String, :size => 30
-    property :last_tweeted_at, DateTime
+    property :last_tweeted_at, DateTime, :default => DateTime.now
     property :created_at, DateTime
     property :updated_at, DateTime
 end

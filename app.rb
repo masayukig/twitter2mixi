@@ -21,8 +21,10 @@ before do
   @debug_flg = true
 
   # user_dao初期化
-  @user_dao = UserDao.new @@config
-  @user_dao.login session[:access_token], session[:secret_token]
+  if request.path_info != '/'
+    @user_dao = UserDao.new @@config
+    @user_dao.login session[:access_token], session[:secret_token]
+  end
 
   if request.path_info =~ /[.ico|.jpg|.css|^\/uc|^\/]$/
     @client = nil
