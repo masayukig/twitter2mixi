@@ -6,39 +6,34 @@ require 'dm-core'
 require 'lib/user'
 require 'time'
 require 'lib/user_dao'
+require 'thread'
 
 class Batch
   def initialize config
-    @@config = config
-
-    # DB初期化
-    #    DataMapper.setup(:default, "sqlite3::memory:")
-    DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{@@config['env']}.db")
-    #DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@@config['env']}.log", 0)
-    DataMapper.auto_upgrade!
-    
+    @config = config
     @debug_flg = true
   end
 
   # [返り値]
   #   Twitter2Mixiしたツブヤキの合計数
   #
-  def execute
+  def execute user_q, no = ''
     count = 0
-    users = User.all
-    users.each {|user|
-      next if user == nil
+    while true
+      user = user_q.pop
+      puts "[#{no}]Finish: count=#{count}" if user == nil
+      return count if user == nil
       next if user.twitter_token == nil || user.twitter_secret == nil
       next if user.mixi_email == nil    || user.mixi_password == nil
 
-      puts "Start: #{Time.new} mixi_account=#{user.mixi_email}" if @debug_flg
+      puts "[#{no}]Start: #{Time.new} mixi_account=#{user.mixi_email}" if @debug_flg
 
       # ショートURLの生成
       # twitter_urlがあるか？をチェック
-#      puts "user.twitter_url:#{user.twitter_url}" if @debug_flg
+#      puts "[#{no}]user.twitter_url:#{user.twitter_url}" if @debug_flg
 #      if user.twitter_url == nil || user.twitter_url == ''
 #        # user_dao初期化
-#        user_dao = UserDao.new @@config
+#        user_dao = UserDao.new @config
 #        # 一度ログインし、Twitter向けのアドレス生成
 #        user_dao.login user.twitter_token, user.twitter_secret
 #        user_dao.make_short_twitter_url screen_name
@@ -46,8 +41,8 @@ class Batch
 #
       # Twitterクライント準備
       client = TwitterOAuth::Client.new(
-          :consumer_key => @@config['consumer_key'],
-          :consumer_secret => @@config['consumer_secret'],
+          :consumer_key => @config['consumer_key'],
+          :consumer_secret => @config['consumer_secret'],
           :token => user.twitter_token,
           :secret => user.twitter_secret
       )
@@ -61,7 +56,7 @@ class Batch
       # 一番初めの同期作業
       # ────────────────────
       if user.last_tweeted_at == nil
-        puts "一番初めの同期作業".tosjis if @debug_flg
+        puts "[#{no}]一番初めの同期作業".tosjis if @debug_flg
 
         # 最終ステータスをDBに保存
         # 最新のつぶやき時間をDBに保持
@@ -77,7 +72,7 @@ class Batch
       # 最新のTwitterつぶやき時間 < DB上の最新Twitterつぶやき時間ならば、何もしない
       # (Twitter上の最新つぶやきをユーザが手動削除に対応)
       if created_at < user.last_tweeted_at.to_time
-        puts "ユーザがつぶやきを削除?(created_at: #{created_at} , last_tweeted_at: #{user.last_tweeted_at} ".tosjis if @debug_flg
+        puts "[#{no}]ユーザがつぶやきを削除?(created_at: #{created_at} , last_tweeted_at: #{user.last_tweeted_at} ".tosjis if @debug_flg
         next
       end
 
@@ -92,7 +87,7 @@ class Batch
               text = delete_reply_status(text)
               timeline << text if (text != nil && text != '')
           else
-              puts "status.class is #{status.class}" if @debug_flg
+              puts "[#{no}]status.class is #{status.class}" if @debug_flg
           end
         }
       rescue
@@ -102,7 +97,7 @@ class Batch
 
       # timeline チェック。echo対象つぶやきが無ければ、次のユーザ処理
       if timeline.empty?
-        puts "つぶやき対象無し".tosjis if @debug_flg
+        puts "[#{no}]つぶやき対象無し".tosjis if @debug_flg
         next
       end
 
@@ -123,7 +118,7 @@ class Batch
         user.last_tweeted_at = created_at
         user.save
       end
-    }
+    end
 
     return count
   end
@@ -140,16 +135,48 @@ class Batch
   def delete_reply_status text
     text = text.gsub(/^@.*/, '')
   end
+
+  def main
+    max_thread = @config['max_thread_number']
+    user_q = Queue.new
+
+    User.all.each { |user|
+      next if user == nil
+      next if user.twitter_token == nil || user.twitter_secret == nil
+      next if user.mixi_email == nil    || user.mixi_password == nil
+      user_q.push(user)
+    }
+    for i in 1..max_thread
+      user_q.push(nil)
+    end
+    count = 0
+    threads = []
+    for no in 1..max_thread
+      threads.push(Thread.new {
+        count += execute user_q, no
+      })
+    end
+
+    return count
+  end
 end
 
-puts 'start twiter2mixi batch'
 
 # コンフィグ情報読込
 config = YAML.load_file(File.expand_path(File.dirname(__FILE__)) + '/../config.yml')
 
+# DB初期化
+#    DataMapper.setup(:default, "sqlite3::memory:")
+DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{config['env']}.db")
+#DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{config['env']}.log", 0)
+DataMapper.auto_upgrade!
+
+puts 'start twiter2mixi batch'
+
+
 # バッチ処理実行
 batch = Batch.new config
-count = batch.execute
+count = batch.main
 
 # 終了メッセージ
 puts "twitter2mixi: #{count}"

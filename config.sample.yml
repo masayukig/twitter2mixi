@@ -22,3 +22,6 @@ twitter_secret: replace_your_twitter_secret
 
 bitly_api_key: replace_your_bit.ly_api_key
 bitly_login_id: replace_your_bit.ly_login_id
+
+# max thread number
+max_thread_number: 5
