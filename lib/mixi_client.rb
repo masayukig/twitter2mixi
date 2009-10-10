@@ -165,7 +165,7 @@ class MixiClient
     timeline.reverse_each {|text|
     puts text.tosjis
       count += 1 if write_echo(text, twitter_url) != nil
-      sleep 0.5
+      sleep 1
     }
 
     return count
