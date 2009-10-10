@@ -49,6 +49,9 @@ class Batch
           :token => user.twitter_token,
           :secret => user.twitter_secret
       )
+      next if client == nil
+      next if client.user == nil
+
       timeline = Array.new
       # 最新のつぶやき時間を取得
       created_at = Time.parse(client.user[0]['created_at']) 
