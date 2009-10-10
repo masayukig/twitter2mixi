@@ -14,6 +14,9 @@ end
 before do
   # loginflgの設定
   @login_flg = session[:login_flg]
+  @configenv = @@config['env']
+  @configenv_ja = 'ステージング' if @configenv=='staging'
+  @configenv_ja = '開発' if @configenv=='development'
 
   # 工事中FLGですべての画面UCにリダイレクト
   redirect 'uc' if request.path_info != '/uc' && request.path_info != '/css/main.css' && @@uc_flg

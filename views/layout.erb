@@ -10,6 +10,12 @@
 <!-- Shell -->
 <div id="shell">
   <a name="top"></a>
+  <% if @configenv=='staging' || @configenv=='development'%>
+    <div class="message error-message">
+    <h1>※注意※ こちらは『<%= @configenv_ja %>環境』です。下記サイト<font color="red">使用禁止</font>です。<br>
+    一般の方は、こちらの<a href='http://twitter2mixi.cyberwave.jp'>本番サイト</a>をご利用下さい。</h1><br>
+    </div>
+  <% end %>
   <a href='/'>
     <img src='/images/twitter2mixi_logo_main.png' alt='Twitter2Mixi ver alfa'>
   </a>
