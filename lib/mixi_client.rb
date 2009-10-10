@@ -30,11 +30,15 @@ class MixiClient
   def login email, password
     WWW::Mechanize.log.info("mixi login by #{email}")
 
-    # ログインしている人でも一度強制ログアウト
+    # ログイン画面を開く
     page = @agent.get('http://mixi.jp/')
+    return false if page == nil
 
     form = page.forms[0]
-    form.fields.find {|f| f.name == 'email'}.value = email
+    return false if form == nil
+    email_field = form.fields.find {|f| f.name == 'email'}
+    return false if email_field == nil
+    email_field.value = email
     form.fields.find {|f| f.name == 'password'}.value = password
     form.fields.find {|f| f.name == 'next_url'}.value = '/home.pl'
     page = @agent.submit(form, form.buttons.first)

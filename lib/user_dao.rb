@@ -19,7 +19,7 @@ class UserDao
     # DB初期化
     #    DataMapper.setup(:default, "sqlite3::memory:")
     DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{@config['env']}.db")
-    DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@config['env']}.log", 0)
+    #DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@config['env']}.log", 0)
     DataMapper.auto_upgrade!
   end
 

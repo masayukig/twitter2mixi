@@ -8,7 +8,6 @@ require 'lib/user_dao'
 configure do
   set :sessions, true
   @@config = YAML.load_file("config.yml") rescue nil || {}
-  @@mixiclient = MixiClient.new
   @@uc_flg = false
 end
 
@@ -67,8 +66,10 @@ post '/signup' do
 
   # もし直リンクだったら/に戻す
   redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
+  redirect '/signup' if params[:email] == '' || params[:password] == ''
 
-  if @@mixiclient.login(params[:email], params[:password])
+  mixiclient = MixiClient.new
+  if mixiclient.login(params[:email], params[:password])
     @flash_mess = '正しいMixiのアカウント情報を確認できました。'
     @user_dao.mixi_regist params[:email], params[:password]
     redirect '/success'

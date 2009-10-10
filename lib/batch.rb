@@ -14,7 +14,7 @@ class Batch
     # DB初期化
     #    DataMapper.setup(:default, "sqlite3::memory:")
     DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{@@config['env']}.db")
-    DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@@config['env']}.log", 0)
+    #DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@@config['env']}.log", 0)
     DataMapper.auto_upgrade!
     
     @debug_flg = true
@@ -87,7 +87,10 @@ class Batch
           if "#{status.class}" == 'Hash'
               # 既にmixi echo済みだったらBreak
               break if Time.parse(status['created_at']) <= user.last_tweeted_at.to_time
-              timeline << replace(status['text'])
+              text = status['text']
+              text = replace(text)
+              text = delete_reply_status(text)
+              timeline << text if (text != nil && text != '')
           else
               puts "status.class is #{status.class}" if @debug_flg
           end
@@ -99,6 +102,7 @@ class Batch
 
       # timeline チェック。echo対象つぶやきが無ければ、次のユーザ処理
       if timeline.empty?
+        puts "つぶやき対象無し".tosjis if @debug_flg
         next
       end
 
@@ -112,7 +116,7 @@ class Batch
       echos = mixiclient.write_echos(timeline)
       count += echos if echos != nil
       # Mixiからログアウトを行う
-      mixiclient.logout
+      #mixiclient.logout
 
       # 最終ステータスをDBに保存
       if count != 0  # mixi echoしたときのみ、DB更新
@@ -129,6 +133,12 @@ class Batch
     # TODO 他の特殊文字でどのようになるか調査、機種依存文字、TAB、<>タグなど
     text = text.gsub(/\r\n|\r|\n/, ' ')
     text = text.chomp
+  end
+
+  # @で始まる文字列を削除
+  # twitterの返信は他のサービスに転送したくない人のための機能
+  def delete_reply_status text
+    text = text.gsub(/^@.*/, '')
   end
 end
 
