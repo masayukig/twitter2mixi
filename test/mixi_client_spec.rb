@@ -36,10 +36,10 @@ describe 'MixiClientの仕様' do
 #    @mixiclient.write_echo(message).should be_nil
 #  end
 
-  it 'nilでログインするとnilが返ってくる'
-  it 'nil文をEchoしたらnilが返ってくる'
-  it '1200文字オーバーのEcho文は書き込めないのでnilがかえる'
-  it '改行文字入りの文章は、半角スペースに置換されて返ってくる'
+#  it 'nilでログインするとnilが返ってくる'
+#  it 'nil文をEchoしたらnilが返ってくる'
+#  it '1200文字オーバーのEcho文は書き込めないのでnilがかえる'
+#  it '改行文字入りの文章は、半角スペースに置換されて返ってくる'
 
   it 'timelineを一括エコー書き込み'do
     @mixiclient.login(@config['mixiemail'], @config['mixipassword']).should be_true
@@ -47,7 +47,7 @@ describe 'MixiClientの仕様' do
     timeline << '最新のツブヤキ'
     timeline << '2回目のツブヤキ'
     timeline << '3回目のツブヤキ(一番古い)'
-    @mixiclient.write_echos(timeline, 'http://bit.ly/z9arK').should == 3
+    @mixiclient.write_echos(timeline).should == 3
   end
 
   it '全角150文字でつぶやくとそのまま投稿される' do

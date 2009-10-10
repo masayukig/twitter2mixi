@@ -54,6 +54,7 @@ class Batch
           :token => user.twitter_token,
           :secret => user.twitter_secret
       )
+
       next if client == nil
       next if client.user == nil
       next if client.user[0] == nil
@@ -138,6 +139,8 @@ class Batch
       mixiclient = MixiClient.new
       mixiclient.login(user.mixi_email, user.mixi_password)
       # TODO falseが帰ってきた時の処理
+
+p timeline
 
       # エコー書き出し
       echos = mixiclient.write_echos(timeline, user.twitter_url)
