@@ -3,6 +3,7 @@
 ##
 #
 # gem install sinatra
+# gem sources -a http://gems.github.com  # for installing 'moomerman-twitter_oauth'
 # gem install moomerman-twitter_oauth
 # gem install mechanize --version "= 0.8.5"
 # gem install do_sqlite3 dm-core dm-timestamps
