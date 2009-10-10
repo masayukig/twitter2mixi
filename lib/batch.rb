@@ -51,6 +51,9 @@ class Batch
       )
       next if client == nil
       next if client.user == nil
+      next if client.user[0] == nil
+      next if client.user[0]['created_at'] == nil
+      next if client.user[0]['user'] == nil
 
       timeline = Array.new
       # 最新のつぶやき時間を取得
