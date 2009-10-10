@@ -9,6 +9,7 @@
 # gem install rspec
 # gem install rack-test
 # gem install win32console # もしWindows上で動かす時
+# gem install gcalapi
 
 
 ##
