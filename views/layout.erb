@@ -1,60 +1,67 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <title>Twitter2mixi | TwitterしたらMixiエコーに自動送信!! </title>
   <link href="css/style.css" media="all" rel="Stylesheet" type="text/css" />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
 <body>
-<%= session[:access_token] if @debug_flg %>
-<%= '<br>' if @debug_flg %>
-<%= session[:secret_token] if @debug_flg %>
+<!-- Shell -->
 <div id="shell">
-    <div id="header">
-            <h1><a href='/'>Twitter2Mixi</a></h1>
-                <font size=2 color='#a0a0a0'>
-                    ver alfa
-                </font>
-                <div class="right">
-                    TwitterしたらMixiエコーに自動送信!! 現在：<%= @user_dao.get_all_count %>人が利用中!
-                </div>
+  <a name="top"></a>
+  <% if @configenv=='staging' || @configenv=='development'%>
+    <div class="message error-message">
+    <h1>※注意※ こちらは『<%= @configenv_ja %>環境』です。下記サイト<font color="red">使用禁止</font>です。<br>
+    一般の方は、こちらの<a href='http://twitter2mixi.cyberwave.jp'>本番サイト</a>をご利用下さい。</h1><br>
     </div>
+  <% end %>
+  <a href='/'>
+    <img src='/images/twitter2mixi_logo_main.png' alt='Twitter2Mixi ver alfa'>
+  </a>
+  <div class="right">
+    TwitterしたらMixiボイスに自動送信!!
+  </div>
 
-    <div id="navigation">
-                <ul>
-                    <% if @login_flg %>
-                    <li><a href='/signup'><span>Mixiアカウント設定</span></a></li>
-                    <li><a href='/setting'><span>各種設定</span></a></li>
-                    <div class="right">
-                      <li><a href='/unregist'><span>退会</span></a></li>
-                      <li><a href='/disconnect'><span>ログアウト</span></a></li>
-                    </div>
-                    <% else %>
-                    <li><a href='/connect'><span>ログイン(新規登録)</span></a></li>
-                    <% end %>
-                </ul>
-    </div>
+  <div id="navigation">
+    <ul>
+      <% if @login_flg %>
+        <li><a href='/signup'><span>Mixiアカウント設定</span></a></li>
+        <div class="right">
+          <li><a href='/unregist'><span>退会</span></a></li>
+          <li><a href='/disconnect'><span>ログアウト</span></a></li>
+        </div>
+      <% else %>
+        <li><a href='/#whats'><span>twitter2mixiって？</span></a></li>
+        <li><a href='/connect'><span>新規登録</span></a></li>
+        <li><a href='/#faq'><span>よくある質問</span></a></li>
+        <li><a href='/#our'><span>運営者</span></a></li>
+        <li><a href='/#friend'><span>求人</span></a></li>
+        <div class="right">
+        <li><a href='/connect'><span>ログイン</span></a></li>
+        <li><a href='/#kiyaku'><span>利用規約</span></a></li>
+      <% end %>
+    </ul>
+  </div>
 
   <div id="content">
-  
-
-  <br clear="all"/>
-
-  <%= yield %>
-
-  <div id="footer" align="center">
-    <br/>
-    <small>
-      &copy; <a href='http://cyberwave.jp/nashiki/' target='_blank'>cyberwave.jp</a>
-    </small>
-    <br/>
-    <small>
-      original template from <a href='http://chocotemplates.com/' target='_blank'>chocotemplates.com</a>
-    </small>
+    <%= yield %>
   </div>
-  
 </div>
+<!-- End Shell -->
+
+<!-- Footer -->
+<div id="footer" align="center">
+  <small>
+    &copy; <a href='http://cyberwave.jp/nashiki/' target='_blank'>cyberwave.jp</a><br/>
+    original template from <a href='http://chocotemplates.com/' target='_blank'>chocotemplates.com</a><br>
+  <%= session[:access_token] if @debug_flg %>
+  <%= '<br>' if @debug_flg %>
+  <%= session[:secret_token] if @debug_flg %>
+  </small>
+</div>
+<!-- End Footer -->
+
 <%= partial :googleanalytics %>
 </body>
 </html>

@@ -20,7 +20,7 @@ class UserDao
     # DB初期化
     #    DataMapper.setup(:default, "sqlite3::memory:")
     DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/t2m_#{@config['env']}.db")
-    DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@config['env']}.log", 0)
+    #DataObjects::Sqlite3.logger = DataObjects::Logger.new("log/datamapper_#{@config['env']}.log", 0)
     DataMapper.auto_upgrade!
   end
 
@@ -220,16 +220,18 @@ class UserDao
   #   true: 正常終了
   #   false: 異常終了
   #
+  # loginメソッドでログイン後に、
   # twitterのscreen nameを使用し、ユーザのtwitterページURLを生成。
   # 短いURLにして、DBへ保持。(短いURLはbit.lyのサービスを利用)
-  def save_short_users_url screen_name, twitter_token, twitter_secret
-    user = User.first(:twitter_token => twitter_token, :twitter_secret => twitter_secret)
-    if user == nil
-      puts "no user.(#{screen_name})"
-      return false
-    end
-    url = "http://api.bit.ly/shorten?version=2.0.1&longUrl=http://twitter.com/"
-    url += screen_name + "&login=" + @config['bitly_login_id'] + "&apiKey=" + @config['bitly_api_key']
+  def make_short_twitter_url screen_name
+    # ログイン状態でなければ異常終了
+    return false if @login_flg == false
+
+    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    return false if user == nil
+
+    # Twitterへの短いリンク生成
+    url = "http://api.bit.ly/shorten?version=2.0.1&longUrl=http://twitter.com/#{screen_name}&login=#{@config['bitly_login_id']}&apiKey=#{@config['bitly_api_key']}"
     uri = URI.parse(url)
     # TODO エラー処理実装
     Net::HTTP.start(uri.host, uri.port) do |http|
@@ -242,7 +244,7 @@ class UserDao
           bitly_response = JSON.parse(body) rescue next
           # 削除通知など、'text'パラメータを含まないものは無視して次へ
           next unless bitly_response['results']
-          twitter_url = bitly_response['results']['http://twitter.com/' + screen_name]['shortUrl']
+          twitter_url = bitly_response['results']["http://twitter.com/#{screen_name}"]['shortUrl']
           user.attributes = {:twitter_url => twitter_url}
           user.save
           puts "user.twitter_url:#{user.twitter_url}"

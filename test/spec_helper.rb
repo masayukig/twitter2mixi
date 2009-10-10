@@ -1,3 +1,4 @@
+require "nkf"
 require 'rubygems'
 require 'rack/test'
 require 'singleton'

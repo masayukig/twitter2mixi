@@ -8,21 +8,25 @@ require 'lib/user_dao'
 configure do
   set :sessions, true
   @@config = YAML.load_file("config.yml") rescue nil || {}
-  @@mixiclient = MixiClient.new
   @@uc_flg = false
 end
 
 before do
   # loginflgの設定
   @login_flg = session[:login_flg]
+  @configenv = @@config['env']
+  @configenv_ja = 'ステージング' if @configenv=='staging'
+  @configenv_ja = '開発' if @configenv=='development'
 
   # 工事中FLGですべての画面UCにリダイレクト
   redirect 'uc' if request.path_info != '/uc' && request.path_info != '/css/main.css' && @@uc_flg
   @debug_flg = true
 
   # user_dao初期化
-  @user_dao = UserDao.new @@config
-  @user_dao.login session[:access_token], session[:secret_token]
+  if request.path_info != '/'
+    @user_dao = UserDao.new @@config
+    @user_dao.login session[:access_token], session[:secret_token]
+  end
 
   if request.path_info =~ /[.ico|.jpg|.css|^\/uc|^\/]$/
     @client = nil
@@ -65,8 +69,10 @@ post '/signup' do
 
   # もし直リンクだったら/に戻す
   redirect '/' if session[:access_token] == '' || session[:secret_token] == ''
+  redirect '/signup' if params[:email] == '' || params[:password] == ''
 
-  if @@mixiclient.login(params[:email], params[:password])
+  mixiclient = MixiClient.new
+  if mixiclient.login(params[:email], params[:password])
     @flash_mess = '正しいMixiのアカウント情報を確認できました。'
     @user_dao.mixi_regist params[:email], params[:password]
     redirect '/success'

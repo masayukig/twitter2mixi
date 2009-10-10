@@ -19,7 +19,7 @@ class User
     property :gcal_password, String, :length => 500
     property :echo_twitter_url, String, :length => 1
     property :twitter_url, String, :length => 30
-    property :last_tweeted_at, DateTime
+    property :last_tweeted_at, DateTime, :default => DateTime.now
     property :created_at, DateTime
     property :updated_at, DateTime
 end

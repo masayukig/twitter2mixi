@@ -15,7 +15,7 @@ describe Batch do
     # 会員登録
     @user_dao.twitter_regist(@config['twitter_token'], @config['twitter_secret']).should == 1
     @user_dao.mixi_regist(@config['mixiemail'], @config['mixipassword']).should be_true
-    @user_dao.last_status = '半月前から『おじさん』になりました！姉の赤ちゃん^^ カワイイ！ http://twitpic.com/eu3gb'
+    @user_dao.last_status = 'こんにちは！'
 #    @user_dao.last_status = 'twilog.org ユーザになりました。@ropross さん、素晴らしいです！ http://twitpic.com/ez1le'
 
 

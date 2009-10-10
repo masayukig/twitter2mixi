@@ -1,19 +1,21 @@
 <center>
+<div class="message thank-message">
 <p>
-<% if @flash_mess && @flash_mess != '' %>
-    <div class="message error-message">
-        <p><strong><%= @flash_mess%></strong></p>
-    </div>
-<% end %>
-あなたの、Mixiアカウントを教えて下さい。<br>
+<strong>あなたの、Mixiアカウントを教えて下さい。</strong>
 </p>
+</div>
+<% if @flash_mess.size > 0 %>
+<div class="message error-message">
+<p>
+<strong><%= @flash_mess %></strong>
+</p>
+</div>
+<% end %>
 <br>
-<img src="/images/mixi_top.jpg" width='70%'>
-</center>
+<img src="/images/mixi_top.jpg" width='50%'>
 
-<center><br><br>
-<div class="message">
-こちらにMixiアカウントを入力して、
+<div id="message">
+こちらにMixiアカウントを入力して、<br>
 「Twitter2Mixi登録」ボタンをクリックして下さい。
 </div>
 
@@ -26,4 +28,5 @@
       　　　　　　▼<br>
       <input type="submit" value="　Twitter2Mixi登録　" />
 </form>
+
 </center>

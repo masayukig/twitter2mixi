@@ -30,11 +30,15 @@ class MixiClient
   def login email, password
     WWW::Mechanize.log.info("mixi login by #{email}")
 
-    # ログインしている人でも一度強制ログアウト
-    page = @agent.get('http://mixi.jp/logout.pl')
+    # ログイン画面を開く
+    page = @agent.get('http://mixi.jp/')
+    return false if page == nil
 
     form = page.forms[0]
-    form.fields.find {|f| f.name == 'email'}.value = email
+    return false if form == nil
+    email_field = form.fields.find {|f| f.name == 'email'}
+    return false if email_field == nil
+    email_field.value = email
     form.fields.find {|f| f.name == 'password'}.value = password
     form.fields.find {|f| f.name == 'next_url'}.value = '/home.pl'
     page = @agent.submit(form, form.buttons.first)
@@ -97,8 +101,9 @@ class MixiClient
   # エコー書き込み
   # 書き込む際に、" #{twitter_url}"という文字列を後ろに付加します。
   # 正しく書き込めたらTrue、エラーしたらFalseを返します
-  def write_echo message, twitter_url
+  def write_echo message, twitter_url = ''
     return nil if @login_flg == false
+    return nil if message == nil || message == ''
 
     # mixi エコー を開く
     page = @agent.get("http://mixi.jp/recent_echo.pl")
@@ -116,12 +121,27 @@ class MixiClient
       return nil if form == nil
     end
 
-    if (message.toeuc + " " + twitter_url).split(//e).length > 150
-      url_length = (" " + twitter_url).length
-      message_length = 150 - url_length - 2 # ".."分も削除
-      message = message.toeuc.split(//e)[0..message_length - 1].join + ".."
+    # (EUC文字列として) 長さが150文字以上の時
+    message_length = message.toeuc.split(//e).length
+    twitter_url_length = twitter_url.length
+
+    if twitter_url_length == 0 && message_length > 150
+      len = 150 - 2 # ".."分も削除
+      message = message.toeuc.split(//e)[0..len - 1].join + ".."
+      if /.\z/ !~ message
+        message[-1,1] = ''
+      end
+    elsif twitter_url_length > 0 && (message_length + 1 + twitter_url_length) > 150
+      len = 150 - twitter_url_length - 3 # スペースと".."分も削除
+      message = message.toeuc.split(//e)[0..len - 1].join + ".."
+      if /.\z/ !~ message
+        message[-1,1] = ''
+      end
     end
-    form.field_with(:name => 'body').value = message.toeuc + " " + twitter_url
+    status = message
+    status += " #{twitter_url}" if twitter_url != ''
+
+    form.field_with(:name => 'body').value = status.toeuc
     page = @agent.submit( form, form.buttons.first ) if @dontsubmit_flg == false
     # TODO エラー処理実装
     return message
@@ -136,7 +156,7 @@ class MixiClient
   # 
   # 受け取ったtimelineを全てMixiエコーに書き込みます
   # 書き込む際に、" #{twitter_url}"という文字列を後ろに付加します。
-  def write_echos timeline, twitter_url
+  def write_echos timeline, twitter_url = ''
     return nil if @login_flg == false
     return nil if timeline == nil
 
@@ -144,7 +164,6 @@ class MixiClient
     # 差分のみMixiEchoへ書き込み（古い順）
     timeline.reverse_each {|text|
       count += 1 if write_echo(text, twitter_url) != nil
-      sleep 0.5
     }
 
     return count
