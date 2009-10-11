@@ -289,6 +289,10 @@ get '/auth' do
   end
 end
 
+
+# ────────────────────────────────────────────────
+# ヘルパー
+# ────────────────────────────────────────────────
 helpers do 
   def partial(name, options={})
     erb("#{name.to_s}".to_sym, options.merge(:layout => false))
