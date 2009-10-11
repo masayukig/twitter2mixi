@@ -1,0 +1,12 @@
+<h1 class="orange">退会手続き</h1>
+<br>
+<div class="message error-message"><p><strong>
+Twitter2Mixi登録を解除する場合には、「退会する」ボタンをクリックして下さい。<br>
+<%= @flash_mess %>
+</strong></p></div>
+
+<center>
+<form method="post" action="/member/unregist">
+  <input type="submit" value="　退会する　" />
+</form>
+</center>

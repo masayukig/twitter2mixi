@@ -1,0 +1,4 @@
+GoogleカレンダーFeed：<br>
+<input type="text" name="extend[gcal_feed_url]" value="<%= params[:extend]['gcal_feed_url'] %>" size="40" <% if not @user_dao.active_flg @webservice['name'] %>disabled<% end %>/><br>
+例) <font size="1">http://www.google.com/calendar/feeds/xxxxxxxxxx@<br>
+　　group.calendar.google.com/private/full</font><br>

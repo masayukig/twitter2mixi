@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'dm-core'
-require 'lib/user'
-require 'lib/hatena_client'
+require 'lib/dao/user'
 require 'net/http'
 require 'uri'
 require 'json'
@@ -12,6 +11,8 @@ class UserDao
 
   def initialize config
     @config = config
+    @user = nil
+    @login_flg = false
     return false if @config == nil
 
     # アカウント情報の初期化
@@ -33,14 +34,14 @@ class UserDao
   # [secret]
   #   Twitterのシークレットトークン
   # [返り値]
-  #   整数: 会員番号(user_id)
+  #   整数: 会員番号(id)
   #   false: 異常終了(TODO 未実装)
   #
   # 既に会員になっていたらLogin状態で正常終了する
   def login token, secret
-    user = User.first(:twitter_token => token, :twitter_secret => secret)
-    return false if user == nil
-    user_id = user.user_id
+    @user = User.first(:twitter_token => token, :twitter_secret => secret)
+    return false if @user == nil
+    user_id = @user.id
 
     # 会員情報を保存
     @twitter_token = token
@@ -69,50 +70,126 @@ class UserDao
   def twitter_regist token, secret
     # 既にログイン済みであればエラー
     return false if @login_status
+    return false if @user
+
     # 既に会員登録されていればログイン処理を行い終了
     if User.first(:twitter_token => token, :twitter_secret => secret)
       return login token, secret
     end
 
     # 新規会員
-    user = User.new
-    user.attributes = {:twitter_token => token, :twitter_secret => secret}
-    user.save
+    @user = User.new
+    @user.attributes = {:twitter_token => token, :twitter_secret => secret}
+    @user.save
+
     @login_flg = true
     @twitter_token = token
     @twitter_secret = secret
-    return user.user_id
+    return @user.id
   end
 
-  # [email]
-  #   MixiのEメール
+  # [account]
+  #   アカウント
   # [password]
-  #   Mixiのパスワード
+  #   パスワード
   # [返り値]
   #   true: 正常終了
   #   false: ログイン状態でないと異常終了
   #
-  # ログインしている状態で、Mixi会員情報を追加登録する
-  def mixi_regist email, password
+  # ログインしている状態で、Webサービスのアカウント情報を登録する
+  def regist name, account_or_extend, password = nil
     # ログイン状態でなければ異常終了
+    return false if account_or_extend == nil
     return false if @login_flg == false
-
-    # 既に同じ情報で登録済みだったら正常終了
-    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret, :mixi_email => email, :mixi_password => password)
-    return true if user != nil
-
-    # 過去に既に同じMixiアカウントで登録があったら過去のアカウント情報を削除する
-    user = User.first(:mixi_email => email, :mixi_password => password)
-    user.destroy if user != nil
+    return false if @user == nil
 
     # ツイッターアカウントの登録があるか確認
     user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
     return false if user == nil
 
-    # Mixiアカウント情報の保持
-    user.attributes = {:mixi_email => email, :mixi_password => password}
-    user.save
+    # 同じWebサービスで、既に同じアカウントが登録してあったら過去アカウント情報を削除する
+    if password != nil
+      webservice = Webservice.first(:name => name, :account => account_or_extend, :password => password)
+      if webservice != nil
+        webservice.attributes = {:account => '', :password => ''}
+        webservice.save
+      end
+    end
+
+    # アカウント情報の保持
+    webservice = user.webservices.first(:name => name)
+    if webservice == nil
+      # 設定情報が無ければ作る
+      if password != nil
+        user.webservices.build(:name => name, :account => account_or_extend, :password => password)
+      else
+        user.webservices.build(:name => name, :extend => account_or_extend)
+      end
+      user.save
+      return true
+    end
+
+    if password != nil
+      webservice.attributes = {:account => account_or_extend, :password => password}
+    else
+      webservice.attributes = {:extend => account_or_extend}
+    end
+    webservice.save
+
     return true
+  end
+
+  def account name
+    return false if @user == nil || name == nil
+    webservice = @user.webservices.first(:name => name)
+    return nil if webservice == nil
+    return webservice.account
+  end
+
+  def password name
+    return false if @user == nil || name == nil
+    webservice = @user.webservices.first(:name => name)
+    return nil if webservice == nil
+    return webservice.password
+  end
+
+  def extend name
+    return false if @user == nil || name == nil
+    webservice = @user.webservices.first(:name => name)
+    return nil if webservice == nil
+    return webservice.extend
+  end
+
+  def login_success name
+    return false if @user == nil || name == nil
+
+    # アカウント情報の保持
+    webservice = @user.webservices.first(:name => name)
+    if webservice == nil
+      # 設定情報が無ければ作る
+      @user.webservices.build(:name => name, :login_success_datetime => Time.now)
+      @user.save
+      return
+    end
+
+    webservice.attributes = {:login_success_datetime => Time.now}
+    webservice.save
+  end
+
+  def login_error name
+    return false if @user == nil || name == nil
+
+    # アカウント情報の保持
+    webservice = @user.webservices.first(:name => name)
+    if webservice == nil
+      # 設定情報が無ければ作る
+      @user.webservices.build(:name => name, :login_error_datetime => Time.now)
+      @user.save
+      return
+    end
+
+    webservice.attributes = {:login_error_datetime => Time.now}
+    webservice.save
   end
 
   # [返り値]
@@ -126,18 +203,22 @@ class UserDao
 
     # アカウント情報を削除する
     user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
+    webservice = user.webservices.all
+    webservice.destroy! if webservice != nil
     user.destroy if user != nil
+
+    @user = nil
+    @login_flg = false
+    return true
   end
 
   def last_status= last_status
     # ログイン状態でなければ異常終了
     return false if @login_flg == false
+    return false if @user == nil
 
-    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
-    return false if user == nil
-
-    user.attributes = {:last_status => last_status}
-    user.save
+    @user.attributes = {:last_status => last_status}
+    @user.save
     return true
   end
 
@@ -149,71 +230,57 @@ class UserDao
     return user.last_status
   end
 
-  # [echo_twitter_url]
-  #   Twitter URLをMixi エコーにechoするか否かのフラグ。(1:出力する。0:出力しない)
-  # [返り値]
-  #   true: 正常終了
-  #   false: 異常終了
-  def update_echo_twitter_url echo_twitter_url
+  def active_flg= flg
+    # ログイン状態でなければ異常終了
     return false if @login_flg == false
-    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
-    return false if user == nil
-    user.attributes = {:echo_twitter_url => echo_twitter_url}
-    user.save
+    return false if @user == nil
+
+    @user.attributes = {:active_flg => flg}
+    @user.save
     return true
   end
 
-  # [id]
-  #   Hatena ID
-  # [password]
-  #   Hatena Haikuのパスワード
-  # [返り値]
-  #   true: 正常終了
-  #   false: 異常終了
-  def update_hatena_haiku_setting id, password
+  def webservice_active_flg name, flg
+    # ログイン状態でなければ異常終了
     return false if @login_flg == false
-    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
-    return false if user == nil
-    # TODO ID, password確認処理
-    # hatena haikuへログイン
-    hatenaclient = HatenaClient.new
-    is_success = hatenaclient.login_haiku(id, password)
-    return false if is_success == false  # ログイン失敗 == ユーザID、パスワード不正
+    return false if @user == nil || name == nil || name == ''
+
+    # 各WEBサービス毎の設定
+    webservice = @user.webservices.first(:name => name)
+    if webservice == nil
+      # 設定情報が無ければ作る
+      @user.webservices.build(:name => name, :active_flg => flg)
+      @user.save
+    end
+
+    webservice.attributes = {:active_flg => flg}
+    webservice.save
+    return true
+  end
+
+  def active_flg name = ''
+    # ログイン状態でなければ異常終了
+    return false if @login_flg == false
+    return false if @user == nil
+
+    # 共通設定
+    return @user.active_flg if name == ''
+
+    # 各WEBサービス毎の設定
+    webservice = @user.webservices.first(:name => name)
+    if webservice == nil
+      # 設定情報が無ければ作る
+      @user.webservices.build(:name => name)
+      @user.save
+      webservice = @user.webservices.first(:name => name)
+    end
     
-    user.attributes = {:hatena_id => id, :hatena_haiku_password => password}
-    user.save
-    return true
+    return webservice.active_flg if webservice != nil
+
+    # 異常
+    return nil
   end
 
-  # [params]
-  #   入力値
-  # [返り値]
-  #   true: 正常終了
-  #   false: 異常終了
-  def update_gcal_setting params
-    return false if @login_flg == false
-    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
-    return false if user == nil
-
-    # TODO ID, password確認処理実装
-
-    user.attributes = {:gcal_mail => params[:gcal_mail], :gcal_password => params[:gcal_password], :gcal_feed_url => params[:gcal_feed_url]}
-    user.save
-    return true
-  end
-
-  # ユーザの設定値を取得します
-  # [返り値]
-  #   nil以外:検索結果
-  #   nil: 異常終了(該当データなし)
-  def get_settings
-    return nil if @login_flg == false
-    user = User.first(:twitter_token => @twitter_token, :twitter_secret => @twitter_secret)
-    return nil if user == nil
-
-    return user
-  end
-  
   # [screen_name]
   #   MixiのEメールtwitterのscreen name
   # [返り値]
