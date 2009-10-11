@@ -25,3 +25,7 @@ bitly_login_id: replace_your_bit.ly_login_id
 
 # max thread number
 max_thread_number: 5
+
+# thread timeout (second)
+thread_timeout: 300
+

@@ -14,7 +14,10 @@ require 'lib/timeline'
 require 'thread'
 
 class Batch
+  attr_accessor :user_count #処理したユーザ数
+
   def initialize config
+    @user_count = 0
     @config = config
     @debug_flg = true
   end
@@ -30,7 +33,7 @@ class Batch
         puts "[#{no}]Finish: count=#{count}" 
         return count
       end
-      
+      @user_count += 1
       next if user.twitter_token == nil || user.twitter_secret == nil
       next if user.mixi_email == nil    || user.mixi_password == nil
 
@@ -47,6 +50,7 @@ class Batch
 #        user_dao.make_short_twitter_url screen_name
 #      end
 
+      next if @config['env'] == 'test'
       # Twitterクライント準備
       client = TwitterOAuth::Client.new(
           :consumer_key => @config['consumer_key'],
@@ -139,7 +143,7 @@ class Batch
 
       # Mixiへログインする
       mixiclient = MixiClient.new
-      #     mixiclient.dontsubmit if @debug_flg
+      mixiclient.dontsubmit if @@config['env'] == 'test'
       mixiclient.login(user.mixi_email, user.mixi_password)
       # TODO falseが帰ってきた時の処理
 
@@ -196,6 +200,16 @@ p timeline
   def main max_thread
     user_q = Queue.new
 
+    # 最初にスレッドを作成し、随時処理していく
+    count = 0
+    threads = []
+    for no in 1..max_thread
+      threads.push(Thread.new {
+        count += execute user_q, no
+      })
+      puts "start up no.#{no} thread."
+    end
+
     User.all.each { |user|
       next if user == nil
       next if user.twitter_token == nil || user.twitter_secret == nil
@@ -205,15 +219,8 @@ p timeline
     for i in 1..max_thread
       user_q.push(nil)
     end
-    count = 0
-    threads = []
-    for no in 1..max_thread
-      threads.push(Thread.new {
-        count += execute user_q, no
-      })
-#      puts "start up no.#{no} thread."
-    end
-    threads.each {|t| p t.join.value}
+
+    threads.each {|t| p t.join(@config['thread_timeout']).value}
 
     return count
   end
