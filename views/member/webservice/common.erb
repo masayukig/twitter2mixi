@@ -1,0 +1,37 @@
+<h1 class="orange">
+<img src="/images/webservice/logo_<%= @webservice['name'] %>.gif" alt="<%= @webservice['ja'] %>">
+</h1>
+<form method="post" action="/member/setting/<%= @webservice['name'] %>">
+<center>
+<% if @flash_mess %><div class="message thank-message"><p><strong><%= @flash_mess %></strong></p></div><% end %>
+<% if @flash_error_mess %><div class="message error-message"><p><strong><%= @flash_error_mess %></strong></p></div><% end %>
+<table align="center">
+  <tr>
+    <td valign="top">
+    <img src="/images/webservice/cap_<%= @webservice['name'] %>.jpg" width='400'>
+    </td>
+    <td>
+    　
+    </td>
+    <td valign="top">
+      <h3 class="orange">設定</h3>
+      <%= @webservice['ja'] %>への連携は、現在<font color="red"><strong><% if @user_dao.active_flg @webservice['name'] %>有効<% else %>無効<% end %></strong></font>になっています。<br>
+      <font color="#606060"><%= @webservice['ja'] %>への連携を、<% if @user_dao.active_flg @webservice['name'] %><a href="/member/setting/inactive/<%= @webservice['name'] %>">無効</a><% else %><a href="/member/setting/active/<%= @webservice['name'] %>">有効</a><% end %>にする</font><br>
+      <br>
+      <h4 class="orange">アカウント</h4>
+      <input type="text" name="account"  size="30" value="<%=  params[:account] %>"<% if not @user_dao.active_flg @webservice['name'] %>disabled<% end %>/><br>
+      例) <%= @webservice['account_example'] %><br>
+      <h4 class="orange">パスワード</h4>
+      <input type="password" name="password"  size="30" value="<%=  params[:password] %>"<% if not @user_dao.active_flg @webservice['name'] %>disabled<% end %>/><br>
+      <br>
+      <% if @webservice['extend_view'] %>
+      <%= partial :"member/webservice/_#{@webservice['name']}" %>
+      <% end %>
+      <input type="submit" value="　設定　" <% if not @user_dao.active_flg @webservice['name'] %>disabled<% end %>/>
+    </td>
+  </tr>
+</table>
+</form>
+
+</center>
+<br>

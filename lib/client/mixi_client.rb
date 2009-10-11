@@ -1,23 +1,8 @@
-require 'rubygems'
-gem "mechanize", "0.8.5" 
-require 'mechanize'
-require 'kconv'
-require 'logger'
+require 'lib/client/client'
 
-# 環境準備
-# gem install mechanize --version "= 0.8.5"
-
-class MixiClient
+class MixiClient < Client
   def initialize
-    # Mechanizeの初期化
-    @agent = WWW::Mechanize.new
-    @login_flg = false
-    @dontsubmit_flg = false
-
-    # ログ出力
-    WWW::Mechanize.log = Logger.new(File.expand_path(File.dirname(__FILE__)) + '/../log/mechanize.log')
-    WWW::Mechanize.log.level = Logger::INFO
-
+    super
   end
 
   # [email]
@@ -58,6 +43,8 @@ class MixiClient
     page = @agent.get("http://mixi.jp/logout.pl")
     # TODO もう少しまともなログイン判定を実装
     @login_flg = page.header['content-type'] != 'text/html; charset=ISO-8859-1'
+
+    super
   end
 
   # Mixiエコーの利用を開始する
@@ -101,7 +88,7 @@ class MixiClient
   # エコー書き込み
   # 書き込む際に、" #{twitter_url}"という文字列を後ろに付加します。
   # 正しく書き込めたらTrue、エラーしたらFalseを返します
-  def write_echo message, twitter_url = ''
+  def post_status message, twitter_url = ''
     return nil if @login_flg == false
     return nil if message == nil || message == ''
 
@@ -156,7 +143,7 @@ class MixiClient
   # 
   # 受け取ったtimelineを全てMixiエコーに書き込みます
   # 書き込む際に、" #{twitter_url}"という文字列を後ろに付加します。
-  def write_echos timeline, twitter_url = ''
+  def post_statuses timeline, twitter_url = ''
     return nil if @login_flg == false
     return nil if timeline == nil
 
@@ -164,15 +151,10 @@ class MixiClient
     # 差分のみMixiEchoへ書き込み（古い順）
     timeline.reverse_each {|text|
     puts text.tosjis
-      count += 1 if write_echo(text, twitter_url) != nil
+      count += 1 if post_status(text, twitter_url) != nil
       sleep 1
     }
 
     return count
   end
-  
-  def dontsubmit
-    @dontsubmit_flg = true
-  end
-
 end
