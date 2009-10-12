@@ -2,15 +2,13 @@
 require 'rubygems'
 require 'twitter_oauth'
 require 'kconv'
-require 'lib/mixi_client'
-require 'lib/hatena_client'
-require 'lib/wasser_client'
-require 'lib/gcal_client'
+require 'lib/client/mixi_client'
+require 'lib/client/gcal_client'
 require 'dm-core'
-require 'lib/user'
 require 'time'
-require 'lib/user_dao'
-require 'lib/timeline'
+require 'lib/dao/user'
+require 'lib/dao/user_dao'
+require 'yaml'
 require 'thread'
 
 class Batch
@@ -33,11 +31,7 @@ class Batch
         puts "[#{no}]Finish: count=#{count}" 
         return count
       end
-      @user_count += 1
-      next if user.twitter_token == nil || user.twitter_secret == nil
-      next if user.mixi_email == nil    || user.mixi_password == nil
-
-      puts "[#{no}]Start: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")} mixi_account=#{user.mixi_email}" if @debug_flg
+      puts "[#{no}]Start:(Userid=#{user.id}) #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}" if @debug_flg
 
       # ショートURLの生成
       # twitter_urlがあるか？をチェック
@@ -66,7 +60,7 @@ class Batch
       next if client.user[0]['user'] == nil
 
       timeline = Array.new
-      timelines = Array.new # TODO timelineクラスを作成し、それで管理？？
+
       # 最新のつぶやき時間を取得
       created_at = Time.parse(client.user[0]['created_at'])
       # screen_nameの取得
@@ -100,20 +94,11 @@ class Batch
       begin
         client.user.each { |status|
           if "#{status.class}" == 'Hash'
-            # 既にmixi echo済みだったらBreak
-            status_created_at = Time.parse(status['created_at'])
-            break if user.last_tweeted_at != nil && status_created_at <= user.last_tweeted_at.to_time
-            text = status['text']
-            text = replace(text)
-            text = delete_reply_status(text)
-            if (text != nil && text != '')
-              timeline << text
-              # TODO 現在、gcal_clientしか使用していないが、他clientもtimelinesを使用するようにする
-              timeline_tmp = Timeline.new
-              timeline_tmp.text = text
-              timeline_tmp.created_at = created_at
-              timelines << timeline_tmp
-            end
+              # 既にmixi echo済みだったらBreak
+              break if Time.parse(status['created_at']) <= user.last_tweeted_at.to_time
+              text = status['text']
+              text = replace(text)
+              timeline << text if (text != nil && text != '')
           else
             puts "[#{no}]status.class is #{status.class}" if @debug_flg
           end
@@ -129,53 +114,46 @@ class Batch
         next
       end
 
-      puts "user.twitter_url:#{user.twitter_url}"
-      # ユーザがtwitter_urlのechoを希望している、かつ、twitter_urlがあるか？をチェック
-      if user.echo_twitter_url == '1' && (user.twitter_url == nil || user.twitter_url == '')
-        # user_dao初期化
-        @user_dao = UserDao.new @@config
-        @user_dao.save_short_users_url(screen_name, user.twitter_token, user.twitter_secret)
-      end
-      if user.echo_twitter_url != '1'
-        # ユーザがtwitter_urlのechoを希望していなければ、twitter_urlをクリア
-        user.twitter_url = ''
-      end
-
-      # Mixiへログインする
-      mixiclient = MixiClient.new
-      mixiclient.dontsubmit if @@config['env'] == 'test'
-      mixiclient.login(user.mixi_email, user.mixi_password)
-      # TODO falseが帰ってきた時の処理
-
-p timeline
-
+      # ──────────
+      # Mixi書き出し
+      # ──────────
+      # Webサービス アカウントの取得
+      webservice = Webservice.first(:user_id => user.id, :name => 'mixi')
+      # ログインする
+      client = MixiClient.new
+      client.login(webservice.account, webservice.password)
+      extend_ary = YAML.load("#{webservice.extend}")
+      # 「@」が入っていればすべて除外
+      timeline.delete_if {|x| /^.*@.*/ =~ x} if extend_ary != nil && extend_ary.index('inner_at_not_sync') != nil
+      # 先頭が「@」から始まっていれば除外
+      timeline.delete_if {|x| /^@.*/ =~ x} if extend_ary != nil && extend_ary.index('first_at_not_sync') != nil
       # エコー書き出し
-      echos = mixiclient.write_echos(timeline, user.twitter_url)
-      count += echos if echos != nil
+      i = client.post_statuses(timeline)
+      count += i if i != nil
 
-      # wasser書き出し処理
-      # FIXME:暫定
-      wasserclient = WasserClient.new
-      is_success = wasserclient.login_wasser(user.wasser_id, user.wasser_password)
-      puts "is_success:#{is_success}"
-      # wasser 書き出し
-      wasserclient.write_wassers(timeline, user.twitter_url)
-      # Hatena haiku書き出し処理
-      if user.hatena_id != nil && user.hatena_id != ''
-        # hatena haikuへログイン
-        hatenaclient = HatenaClient.new
-        is_success = hatenaclient.login_haiku(user.hatena_id, user.hatena_haiku_password)
-        # haiku書き出し
-        hatenaclient.write_haikus(timeline, user.twitter_url)
-      end
-
+      # ──────────
       # Gcal書き出し
-      gcalclient = GcalClient.new
-      is_success = gcalclient.login(user.gcal_mail, user.gcal_password, user.gcal_feed_url)
-      gcalclient.write_messages(timelines, user.twitter_url)
+      # ──────────
+      # Webサービス アカウントの取得
+#      webservice = Webservice.first(:user_id => user.id, :name => 'gcal')
+#      extend = webservice.extend
+#      if extend != nil
+#        extend_ary = YAML.load(extend)
+#        gcal_feed_url = extend_ary['gcal_feed_url']
+#        if gcal_feed_url != nil
+#          # ログインする
+#          client = GcalClient.new
+#          is_success = client.login(webservice.account, webservice.password)
+#          is_success = client.set_feed_url(gcal_feed_url)
+#          client.post_statuses(timeline)
+#        end
+#      end
 
+      # ──────────
+      # 終了処理
+      # ──────────
       # 最終ステータスをDBに保存
-      if count != 0  # mixi echoしたときのみ、DB更新
+      if i != 0  # mixi echoしたときのみ、DB更新
         user.last_tweeted_at = created_at
         user.save
       end
@@ -213,7 +191,18 @@ p timeline
     User.all.each { |user|
       next if user == nil
       next if user.twitter_token == nil || user.twitter_secret == nil
-      next if user.mixi_email == nil    || user.mixi_password == nil
+      next if user.twitter_token == '' || user.twitter_secret == ''
+      next if user.active_flg == false
+
+      webservice = Webservice.first(:user_id => user.id, :name => 'mixi')
+      next if webservice == nil
+      next if webservice.account == nil || webservice.password == nil || webservice.active_flg == false
+      next if webservice.account == '' || webservice.password == ''
+
+#      p user
+#      p webservice
+#      p YAML.load(webservice.extend)
+
       user_q.push(user)
     }
     for i in 1..max_thread

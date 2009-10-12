@@ -1,8 +1,7 @@
-<% if @flash_mess %>
-<div class="message success-message">
-<p><strong><%= @flash_mess %></strong></p>
-</div>
-<% end %>
+<% if @flash_mess %><div class="message thank-message"><p><strong><%= @flash_mess %></strong></p></div><% end %>
+<h1 class="orange">連携サービス</h1>
+次にMixiボイスの<a href='/member/setting/mixi'>連携設定</a>を行ってください。
+<!--
 <h1 class="orange">全般設定</h1>
 twitter2mixiは、現在、<font color="red"><strong><% if @user_dao.active_flg %>動いて<% else %>一時中止になって<% end %></strong></font>います。<br>
 サービスを、<% if @user_dao.active_flg %><a href="/member/setting/inactive">一時中止</a><% else %><a href="/member/setting/active">再開</a><% end %>にする<br>
@@ -15,3 +14,4 @@ twitter2mixiは、現在、<font color="red"><strong><% if @user_dao.active_flg 
   <% } %>
 </ul>
 <% end %>
+-->

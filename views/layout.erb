@@ -26,11 +26,11 @@
   <div id="navigation">
     <ul>
       <% if @login_flg %>
-        <li><a href='/member/setting'<%= "class='active'" if @path == '/member/setting' %>><span>設定全般</span></a></li>
+        <li><a href='/member/setting'<%= " class='active'" if @path == '/member/setting' %>><span>設定全般</span></a></li>
 <% if @user_dao.active_flg %>
-<% @webservices.each { |webservice| %>
+  <% @webservices.each { |webservice| %>
         <li><a href='/member/setting/<%= webservice['name'] %>'<%= "class='active'" if @path == "/member/setting/#{webservice['name']}" %>><span><%= webservice['ja'] %></span></a></li>
-<% } %>
+  <% } %>
 <% end %>
         <div class="right">
           <li><a href='/member/unregist'><span>退会</span></a></li>
