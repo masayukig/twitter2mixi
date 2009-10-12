@@ -123,10 +123,7 @@ class Batch
       # 先頭が「@」から始まっていれば除外
       timeline.delete_if {|x| /^@.*/ =~ x} if extend_ary != nil && extend_ary.index('first_at_not_sync') != nil
       # エコー書き出し
-
-puts timeline.join("\n").tosjis
-i=0
-#      i = client.post_statuses(timeline)
+      i = client.post_statuses(timeline)
       count += i if i != nil
 
       # ──────────
