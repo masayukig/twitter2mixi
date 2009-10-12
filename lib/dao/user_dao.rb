@@ -80,6 +80,7 @@ class UserDao
     # 新規会員
     @user = User.new
     @user.attributes = {:twitter_token => token, :twitter_secret => secret}
+    @user.webservices.build(:name => 'mixi', :active_flg => true)
     @user.save
 
     @login_flg = true

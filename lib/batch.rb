@@ -1,11 +1,13 @@
 require 'rubygems'
 require 'twitter_oauth'
 require 'kconv'
-require 'lib/mixi_client'
+require 'lib/client/mixi_client'
+require 'lib/client/gcal_client'
 require 'dm-core'
-require 'lib/user'
 require 'time'
-require 'lib/user_dao'
+require 'lib/dao/user'
+require 'lib/dao/user_dao'
+require 'yaml'
 require 'thread'
 
 class Batch
@@ -25,11 +27,7 @@ class Batch
         puts "[#{no}]Finish: count=#{count}" 
         return count
       end
-      
-      next if user.twitter_token == nil || user.twitter_secret == nil
-      next if user.mixi_email == nil    || user.mixi_password == nil
-
-      puts "[#{no}]Start: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")} mixi_account=#{user.mixi_email}" if @debug_flg
+      puts "[#{no}]Start: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}" if @debug_flg
 
       # ショートURLの生成
       # twitter_urlがあるか？をチェック
@@ -57,6 +55,7 @@ class Batch
       next if client.user[0]['user'] == nil
 
       timeline = Array.new
+
       # 最新のつぶやき時間を取得
       created_at = Time.parse(client.user[0]['created_at']) 
       # screen_nameの取得
@@ -94,7 +93,6 @@ class Batch
               break if Time.parse(status['created_at']) <= user.last_tweeted_at.to_time
               text = status['text']
               text = replace(text)
-              text = delete_reply_status(text)
               timeline << text if (text != nil && text != '')
           else
               puts "[#{no}]status.class is #{status.class}" if @debug_flg
@@ -111,20 +109,49 @@ class Batch
         next
       end
 
-      # Mixiへログインする
-      mixiclient = MixiClient.new
-#     mixiclient.dontsubmit if @debug_flg
-      mixiclient.login(user.mixi_email, user.mixi_password)
-      # TODO falseが帰ってきた時の処理
-
-p timeline
-
+      # ──────────
+      # Mixi書き出し
+      # ──────────
+      # Webサービス アカウントの取得
+      webservice = Webservice.first(:user_id => user.id, :name => 'mixi')
+      # ログインする
+      client = MixiClient.new
+      client.login(webservice.account, webservice.password)
+      extend_ary = YAML.load("#{webservice.extend}")
+      # 「@」が入っていればすべて除外
+      timeline.delete_if {|x| /^.*@.*/ =~ x} if extend_ary != nil && extend_ary.index('inner_at_not_sync') != nil
+      # 先頭が「@」から始まっていれば除外
+      timeline.delete_if {|x| /^@.*/ =~ x} if extend_ary != nil && extend_ary.index('first_at_not_sync') != nil
       # エコー書き出し
-      echos = mixiclient.write_echos(timeline)
-      count += echos if echos != nil
 
+puts timeline.join("\n").tosjis
+i=0
+#      i = client.post_statuses(timeline)
+      count += i if i != nil
+
+      # ──────────
+      # Gcal書き出し
+      # ──────────
+      # Webサービス アカウントの取得
+#      webservice = Webservice.first(:user_id => user.id, :name => 'gcal')
+#      extend = webservice.extend
+#      if extend != nil
+#        extend_ary = YAML.load(extend)
+#        gcal_feed_url = extend_ary['gcal_feed_url']
+#        if gcal_feed_url != nil
+#          # ログインする
+#          client = GcalClient.new
+#          is_success = client.login(webservice.account, webservice.password)
+#          is_success = client.set_feed_url(gcal_feed_url)
+#          client.post_statuses(timeline)
+#        end
+#      end
+
+      # ──────────
+      # 終了処理
+      # ──────────
       # 最終ステータスをDBに保存
-      if count != 0  # mixi echoしたときのみ、DB更新
+      if i != 0  # mixi echoしたときのみ、DB更新
         user.last_tweeted_at = created_at
         user.save
       end
@@ -152,7 +179,18 @@ p timeline
     User.all.each { |user|
       next if user == nil
       next if user.twitter_token == nil || user.twitter_secret == nil
-      next if user.mixi_email == nil    || user.mixi_password == nil
+      next if user.twitter_token == '' || user.twitter_secret == ''
+      next if user.active_flg == false
+
+      webservice = Webservice.first(:user_id => user.id, :name => 'mixi')
+      next if webservice == nil
+      next if webservice.account == nil || webservice.password == nil || webservice.active_flg == false
+      next if webservice.account == '' || webservice.password == ''
+
+#      p user
+#      p webservice
+#      p YAML.load(webservice.extend)
+
       user_q.push(user)
     }
     for i in 1..max_thread

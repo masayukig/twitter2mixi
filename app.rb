@@ -74,7 +74,7 @@ get '/member/setting/:name' do |name|
   
   params[:account]  = @user_dao.account name
   params[:password] = @user_dao.password name
-  params[:extend]   = YAML.load(@user_dao.extend name)
+  params[:extend]   = YAML.load("#{@user_dao.extend name}")
 
   erb :"member/webservice/common"
 end
@@ -186,6 +186,17 @@ end
 # ────────────────────────────────────────────────
 # 会員 設定以外
 # ────────────────────────────────────────────────
+# 初回登録時
+get '/member/registsuccess' do 
+  # 未ログインだったら/に戻す
+  redirect '/' unless @login_flg
+  # もし直リンクだったら/に戻す
+  redirect '/' if session[:access_token] == nil || session[:secret_token] == nil
+
+  @flash_mess = 'Twitter2mixiへのご利用ありがとうございます。'
+  erb :"member/setting"
+end
+
 get '/member' do 
   # 未ログインだったら/に戻す
   redirect '/' unless @login_flg
@@ -197,7 +208,6 @@ get '/member' do
     @flash_mess = 'ログインしました。'
   else
     @flash_mess = 'Twitter2mixiへ、ようこそ。'
-    @user_dao.twitter_regist session[:access_token], session[:secret_token]
   end
 
   redirect '/member/setting'
@@ -283,7 +293,10 @@ get '/auth' do
     session[:access_token] = @access_token.token
     session[:secret_token] = @access_token.secret
     session[:login_flg] = true
-    redirect '/member'
+
+    # 会員登録
+    @user_dao.twitter_regist session[:access_token], session[:secret_token]
+    redirect '/member/registsuccess'
   else
     redirect '/'
   end

@@ -53,7 +53,7 @@ class GcalClient < Client
   # エコー書き込み
   # 書き込む際に、" #{twitter_url}"という文字列を後ろに付加します。
   # 正しく書き込めたらTrue、エラーしたらFalseを返します
-  def post_status message, date, twitter_url
+  def post_status message, date, twitter_url = nil
     return nil if @login_flg == false
     @logger.debug("message:#{message}, date:#{date.to_s}")
 
@@ -81,15 +81,14 @@ class GcalClient < Client
   #   ツブヤキ件数
   # 
   # 受け取ったtimelineの内、ハッシュタグ"#gcal"のついているものをgcalに書き込みます
-  def post_statuses timeline, twitter_url
+  def post_statuses timeline, twitter_url = nil
     return nil if @login_flg == false
-    return nil if timeline == nil
 
     count = 0
     # 差分のみgcalへ書き込み（古い順）
     timeline.reverse_each {|timeline|
       if (timeline.text.index("#gcal") != nil)
-        count += 1 if write(timeline.text, timeline.created_at, twitter_url) != nil
+        count += 1 if post_status(timeline.text, timeline.created_at, twitter_url) != nil
         sleep 0.5
       end
     }
