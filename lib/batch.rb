@@ -27,7 +27,7 @@ class Batch
         puts "[#{no}]Finish: count=#{count}" 
         return count
       end
-      puts "[#{no}]Start: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}" if @debug_flg
+      puts "[#{no}]Start:(Userid=#{user.id}) #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}" if @debug_flg
 
       # ショートURLの生成
       # twitter_urlがあるか？をチェック
