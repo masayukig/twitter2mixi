@@ -58,8 +58,16 @@ class Batch
 
       # 最新のつぶやき時間を取得
       created_at = Time.parse(client.user[0]['created_at']) 
-      # screen_nameの取得
-      screen_name = client.user[0]['user']['screen_name']
+
+      # 会員情報の更新
+      user.twitter_id                 = client.user[0]['user']['id']
+      user.twitter_name               = client.user[0]['user']['name']
+      user.twitter_screen_name        = client.user[0]['user']['screen_name']
+      user.twitter_location           = client.user[0]['user']['location']
+      user.twitter_description        = client.user[0]['user']['description']
+      user.twitter_profile_image_url  = client.user[0]['user']['profile_image_url']
+      user.twitter_url                = client.user[0]['user']['url']
+      user.save
 
       # ────────────────────
       # 一番初めの同期作業
@@ -69,7 +77,7 @@ class Batch
 
         # 最終ステータスをDBに保存
         # 最新のつぶやき時間をDBに保持
-        user.last_tweeted_at = created_at 
+        user.last_tweeted_at = created_at
         user.save
         next
       end
