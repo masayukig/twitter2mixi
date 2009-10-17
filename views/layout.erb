@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-  <title>Twitter2mixi | TwitterしたらMixiエコーに自動送信!! </title>
+  <title>Twitter2mixi | Twitterしたらmixiボイスに自動送信!! </title>
   <link href="/css/style.css" media="all" rel="Stylesheet" type="text/css" />
 </head>
 
@@ -17,7 +17,7 @@
     </div>
   <% end %>
   <a href='/'>
-    <img src='/images/twitter2mixi_logo_main.png' alt='Twitter2Mixi ver alfa'>
+    <img src='/images/twitter2mixi_logo_main.png' alt='Twitter2Mixi ver alfa' border=0>
   </a>
   <div class="right">
     TwitterしたらMixiボイスに自動送信!!
@@ -32,10 +32,9 @@
         <li><a href='/member/setting/<%= webservice['name'] %>'<%= "class='active'" if @path == "/member/setting/#{webservice['name']}" %>><span><%= webservice['ja'] %></span></a></li>
   <% } %>
 <% end %>
-        <div class="right">
-          <li><a href='/member/unregist'><span>退会</span></a></li>
-          <li><a href='/member/logout'><span>ログアウト</span></a></li>
-        </div>
+        <li></li>
+        <li><a href='/member/logout'><span>ログアウト</span></a></li>
+        <li><a href='/member/unregist'><span>退会</span></a></li>
       <% else %>
         <li><a href='/#whats'><span>twitter2mixiって？</span></a></li>
         <li><a href='/connect'><span>新規登録</span></a></li>

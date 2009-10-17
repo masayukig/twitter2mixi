@@ -33,6 +33,8 @@ class MixiClient < Client
     # ログイン成功すると「text/html; charset=ISO-8859-1」が返ってきて
     # ログイン失敗すると「text/html; charset=EUC-JP」が返ってくる
     @login_flg = page.header['content-type'] == 'text/html; charset=ISO-8859-1'
+    
+    return @login_flg
   end
 
   # ログアウト処理
