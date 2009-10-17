@@ -44,7 +44,8 @@ class Batch
 #        user_dao.make_short_twitter_url screen_name
 #      end
 
-      next if @config['env'] == 'test'
+      # envが'test'なら、更新しない。
+      # next if @config['env'] == 'test'
       # Twitterクライント準備
       client = TwitterOAuth::Client.new(
           :consumer_key => @config['consumer_key'],
