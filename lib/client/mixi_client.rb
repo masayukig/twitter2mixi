@@ -152,7 +152,6 @@ class MixiClient < Client
     count = 0
     # 差分のみMixiEchoへ書き込み（古い順）
     timeline.reverse_each {|text|
-    puts text.tosjis
       count += 1 if post_status(text, twitter_url) != nil
       sleep 1
     }

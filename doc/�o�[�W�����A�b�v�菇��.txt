@@ -1,57 +1,97 @@
-ƒo[ƒWƒ‡ƒ“ƒAƒbƒvŽè‡‘
+ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚¢ãƒƒãƒ—æ‰‹é †æ›¸
 
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-‚PAƒ~ƒOƒŒ[ƒVƒ‡ƒ“ˆ—‚ÌŽ–‘OŠm”F
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-	ƒ~ƒOƒŒ[ƒVƒ‡ƒ“ˆ—ƒvƒƒOƒ‰ƒ€‚ª–â‘è‚È‚­“®‚­‚©ˆÚs‘O‚ÉŠm”F‚ðs‚¤B
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ï¼‘ã€ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†ã®äº‹å‰ç¢ºèª
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãŒå•é¡Œãªãå‹•ãã‹ç§»è¡Œå‰ã«ç¢ºèªã‚’è¡Œã†ã€‚
 
-	1-1A–{”Ôƒ\[ƒX•DB‚ðƒoƒbƒNƒAƒbƒv
+	1-1ã€æœ¬ç•ªã‚½ãƒ¼ã‚¹ï¼†DBã‚’ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—
 		> cd C:\work\twitter2mixi
 		> cap production_logrotate
 		> cap production_backup
 
-	1-2ADB‚Ìƒ~ƒOƒŒ[ƒVƒ‡ƒ“ˆ—
-		ƒoƒbƒN‚³‚ê‚½ƒA[ƒJƒCƒu‚©‚çDB‚ðŽæ‚èo‚·
-		C:\work\twitter2mixi_migrate‚ÉDB‚ð”z’u‚·‚é
-		ƒ~ƒOƒŒ[ƒVƒ‡ƒ“‚ÌREADME‚ðŽQÆ‚Éˆ—‚ðŽÀs
-		ˆÚs‚ª–³Ž–‚ÉŠ®—¹‚µ‚½‚©DB‚Ì’†g‚ðŠm”F
-			ˆÚsƒ†[ƒU”‚ªˆÚs‘O‚ÆˆÚsŒã‚Åˆê’v‚µ‚Ä‚¢‚é‚©Šm”F‚·‚é
+	1-2ã€DBã®ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
+		ãƒãƒƒã‚¯ã•ã‚ŒãŸã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‹ã‚‰DBã‚’å–ã‚Šå‡ºã™
+		C:\work\twitter2mixi_migrateã«DBã‚’é…ç½®ã™ã‚‹
+		ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®READMEã‚’å‚ç…§ã«å‡¦ç†ã‚’å®Ÿè¡Œ
+		ç§»è¡ŒãŒç„¡äº‹ã«å®Œäº†ã—ãŸã‹DBã®ä¸­èº«ã‚’ç¢ºèª
+			ç§»è¡Œãƒ¦ãƒ¼ã‚¶æ•°ãŒç§»è¡Œå‰ã¨ç§»è¡Œå¾Œã§ä¸€è‡´ã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
 
-	1-3ADB‚Ìƒ~ƒOƒŒ[ƒVƒ‡ƒ“‚ª‚¤‚Ü‚­‚¢‚Á‚Ä‚¢‚é‚©ƒ[ƒJƒ‹ƒAƒvƒŠ‚ÅŠm”F
+	1-3ã€DBã®ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãŒã†ã¾ãã„ã£ã¦ã„ã‚‹ã‹ãƒ­ãƒ¼ã‚«ãƒ«ã‚¢ãƒ—ãƒªã§ç¢ºèª
 
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-‚QAˆÚsŠJŽn
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-	2-1Atwit2mixiƒAƒJƒEƒ“ƒg‚ÅHŽ–‚É‚È‚é‚±‚Æ’m
+	1-4ã€è¤‡æ•°ãƒ–ãƒ©ã‚¦ã‚¶å¯¾å¿œç¢ºèª
+
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ï¼’ã€ç§»è¡Œé–‹å§‹
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	2-1ã€twit2mixiã‚¢ã‚«ã‚¦ãƒ³ãƒˆã§å·¥äº‹ã«ãªã‚‹ã“ã¨å‘ŠçŸ¥
+		https://twitter.com/
+		ã‚¢ã‚«ã‚¦ãƒ³ãƒˆåï¼štwit2mixi
+
+	2-2ã€æœ¬ç•ªã‚µãƒ¼ãƒãƒ¼ã‚’ã€Œå·¥äº‹ä¸­æ¡ˆå†…ã€ã«ã™ã‚‹
+		> sudo vi /etc/httpd/conf.d/rails.conf
+		> sudo /etc/rc.d/init.d/httpd restart
+
+	2-3ã€CRONå‡¦ç†ã‚’æ­¢ã‚ã‚‹
+		> crontab -e
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ï¼“ã€ãƒ‡ãƒ¼ã‚¿ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	å‰è¿°ã®1ç•ªã®æ‰‹é †ã¨åŒæ§˜ã«ã€æ­¢ã‚ãŸæœ¬ç•ªã‚µãƒ¼ãƒãƒ¼ç’°å¢ƒã®DBã‚’ç§»è¡Œã™ã‚‹
+
+	3-1ã€æœ¬ç•ªã‚½ãƒ¼ã‚¹ï¼†DBã‚’ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—
+		> cd C:\work\twitter2mixi
+		> cap production_logrotate
+		> cap production_backup
+
+	3-2ã€DBã®ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
+		ãƒãƒƒã‚¯ã•ã‚ŒãŸã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‹ã‚‰DBã‚’å–ã‚Šå‡ºã™
+		C:\work\twitter2mixi_migrateã«DBã‚’é…ç½®ã™ã‚‹
+		ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®READMEã‚’å‚ç…§ã«å‡¦ç†ã‚’å®Ÿè¡Œ
+		ç§»è¡ŒãŒç„¡äº‹ã«å®Œäº†ã—ãŸã‹DBã®ä¸­èº«ã‚’ç¢ºèª
+			ç§»è¡Œãƒ¦ãƒ¼ã‚¶æ•°ãŒç§»è¡Œå‰ã¨ç§»è¡Œå¾Œã§ä¸€è‡´ã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
+
+	3-3ã€DBã®ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãŒã†ã¾ãã„ã£ã¦ã„ã‚‹ã‹ãƒ­ãƒ¼ã‚«ãƒ«ã§ç¢ºèª
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ï¼”ã€æœ¬ç•ªç’°å¢ƒæ›¸ãæ›ãˆ
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	4-1ã€æœ¬ç•ªç’°å¢ƒã‚’åˆ¥åã«å¤‰ãˆã¦å•é¡ŒãŒã‚ã£ãŸæ™‚ã«ã™ãã«å¾©æ—§ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
+		å‰å›žãƒªãƒªãƒ¼ã‚¹æ™‚ã«ä½œæˆã—ãŸå³æ™‚å¾©æ—§ãƒ‡ãƒ¼ã‚¿ã‚’å‰Šé™¤
+		> cap production_rollback_delete
+		ç¾è¡Œã®ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã«ã¦å³æ™‚å¾©æ—§ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆ
+		> cap production_begin
+
+	4-2ã€æœ¬ç•ªã‚µãƒ¼ãƒãƒ¼ã®ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã‚’æœ€æ–°åŒ–
+		> cap production_deploy
+		
+		git clone git://github.com/nashiki/twitter2mixi.git
+
+	4-3ã€è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ›´æ–°ã™ã‚‹
+		config.yml
+		views/_googleanalytics.erb
+
+	4-4ã€æœ¬ç•ªã‚µãƒ¼ãƒãƒ¼ã¸ãƒŸã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å¾Œã®DBã‚’é…ç½®
+		dbã«ã‚³ãƒ”ãƒ¼
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ï¼•ã€ç§»è¡Œå®Œäº†ç¢ºèª
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	5-1ã€æ–°Verã®æœ¬ç•ªç’°å¢ƒãŒå•é¡Œç„¡ãå‹•ã„ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèªã™ã‚‹
+
+	A,å•é¡Œãªã‘ã‚Œã°
+		CRONã®å†é–‹
+		> crontab -e
 	
-	2-2A–{”ÔƒT[ƒo[‚ðuHŽ–’†ˆÄ“àv‚É‚·‚é
-	
-	2-3ACRONˆ—‚ðŽ~‚ß‚é
+		ã€Œå·¥äº‹ä¸­æ¡ˆå†…ã€è§£é™¤ã™ã‚‹
+		> sudo vi /etc/httpd/conf.d/rails.conf
+		> sudo /etc/rc.d/init.d/httpd restart
 
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-‚RAƒf[ƒ^ƒ~ƒOƒŒ[ƒVƒ‡ƒ“
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-	‘Oq‚Ì1”Ô‚ÌŽè‡‚Æ“¯—l‚ÉAŽ~‚ß‚½–{”ÔƒT[ƒo[ŠÂ‹«‚ÌDB‚ðˆÚs‚·‚é
-	3-1A–{”Ôƒ\[ƒX•DB‚ðƒoƒbƒNƒAƒbƒv
-	3-2ADB‚Ìƒ~ƒOƒŒ[ƒVƒ‡ƒ“ˆ—
-	3-3ADB‚Ìƒ~ƒOƒŒ[ƒVƒ‡ƒ“‚ª‚¤‚Ü‚­‚¢‚Á‚Ä‚¢‚é‚©ƒ[ƒJƒ‹‚ÅŠm”F
+	B,å•é¡Œã‚ã‚Œã°å‰è¿°ã§æŽ§ãˆãŸæœ¬ç•ªç’°å¢ƒã‚’å…ƒã«æˆ»ã™(ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯)
+		> mv twitter2mixi twitter2mixi_gomi
+		> mv twitter2mixi_back twitter2mixi
 
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-‚SA–{”ÔŠÂ‹«‘‚«Š·‚¦
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-	4-1A–{”ÔŠÂ‹«‚ð•Ê–¼‚É•Ï‚¦‚Ä–â‘è‚ª‚ ‚Á‚½Žž‚É‚·‚®‚É•œ‹Œ‚Å‚«‚é‚æ‚¤‚É‚·‚é
-	4-2A–{”ÔƒT[ƒo[‚Ìƒ\[ƒXƒR[ƒh‚ðÅV‰»
-		H
-	4-3A–{”ÔƒT[ƒo[‚Öƒ~ƒOƒŒ[ƒVƒ‡ƒ“Œã‚ÌDB‚ð”z’u
-
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-‚TAˆÚsŠ®—¹Šm”F
-„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-	5-1AVVer‚Ì–{”ÔŠÂ‹«‚ª–â‘è–³‚­“®‚¢‚Ä‚¢‚é‚±‚Æ‚ðŠm”F‚·‚é
-
-	A,–â‘è‚È‚¯‚ê‚ÎuHŽ–’†ˆÄ“àv‰ðœ‚·‚é
-
-	B,–â‘è‚ ‚ê‚Î‘Oq‚ÅT‚¦‚½–{”ÔŠÂ‹«‚ðŒ³‚É–ß‚·
-	@‹ŒVer‚Ì–{”ÔŠÂ‹«‚ª–â‘è–³‚­“®‚¢‚Ä‚¢‚é‚±‚Æ‚ðŠm”F‚·‚é
-	@–â‘è‚È‚¯‚ê‚ÎuHŽ–’†ˆÄ“àv‰ðœ‚·‚é
-
+	ã€€æ—§Verã®æœ¬ç•ªç’°å¢ƒãŒå•é¡Œç„¡ãå‹•ã„ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèªã™ã‚‹
+	ã€€å•é¡Œãªã‘ã‚Œã°ã€Œå·¥äº‹ä¸­æ¡ˆå†…ã€è§£é™¤ã™ã‚‹
